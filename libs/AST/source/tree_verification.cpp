@@ -144,7 +144,7 @@ static const char* node_val_to_str(const tree_t* tree, const tree_node_t* node,
             snprintf(buf, buf_size, "%lf", node->value.constant);
             return buf;
         case VARIABLE: {
-            c_string_t curr_string = tree->var_stack->data[node->value.var_idx].str;
+            c_string_t curr_string = tree->ident_stack->data[node->value.var_idx].str;
             if(buf_size < curr_string.len) LOGGER_WARNING("string len is bigger than buf_size. Printed %ld symbols, srt_len: %ld", buf_size, curr_string.len);
             
             
@@ -299,7 +299,7 @@ static error_code write_html(const tree_t* tree,
     fprintf(html, "tree ptr  : %p\n", tree);
     fprintf(html, "root ptr  : %p\n", tree->root);
     fprintf(html, "size      : %zu\n", tree->size);
-    fprintf(html, "stack ptr : %p\n", tree->var_stack);
+    fprintf(html, "stack ptr : %p\n", tree->ident_stack);
     fprintf(html, "buff.ptr  : %p\n", tree->buff.ptr);
     fprintf(html, "buff.len  : %zu\n", tree->buff.len);
     fprintf(html, "list idx  : %zu\n", tree->list_idx);

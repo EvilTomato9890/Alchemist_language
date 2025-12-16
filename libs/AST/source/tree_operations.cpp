@@ -12,7 +12,7 @@
 #include "tree_verification.h"
 #include "tree_info.h"
 #include "error_handler.h"
-#include "libs/Stack/include/var_stack.h"
+#include "libs/Stack/include/ident_stack.h"
 #include "libs/My_string/include/my_string.h"
 
 //================================================================================
@@ -106,7 +106,7 @@ error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out) {
     return error;
 }
 
-error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info)) {
+error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info)) {
     HARD_ASSERT(tree != nullptr, "tree pointer is nullptr");
 
     LOGGER_DEBUG("tree_init: started");
@@ -118,7 +118,7 @@ error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, tree_ver_i
     tree->buff = {nullptr, 0};
 
     //error = stack_init(stack, 10 ON_TREE_DEBUG(, TREE_VER_INIT));
-    tree->var_stack = stack;
+    tree->ident_stack = stack;
 
     ON_TREE_DEBUG({
         tree->ver_info  = ver_info;
@@ -138,9 +138,9 @@ error_code tree_destroy(tree_t* tree) {
     error |= destroy_node_recursive(tree->root, &removed);
     tree->root = nullptr;
     tree->size = 0;
-    error |= var_stack_destroy(tree->var_stack);
-    free(tree->var_stack);
-    tree->var_stack = nullptr;
+    error |= ident_stack_destroy(tree->ident_stack);
+    free(tree->ident_stack);
+    tree->ident_stack = nullptr;
     return error;
 }
 //TODO очистка squashes
@@ -285,46 +285,33 @@ error_code tree_replace_value(tree_node_t* node, node_type_t node_type, value_t 
 
 //================================================================================
 
-ssize_t get_var_idx(c_string_t var, const var_stack_t* var_stack) {
-    HARD_ASSERT(var_stack != nullptr, "var_stack is nullptr");
+ssize_t get_ident_idx(c_string_t ident, const ident_stack_t* ident_stack) {
+    HARD_ASSERT(ident_stack != nullptr, "ident_stack is nullptr");
 
-    for(size_t i = 0; i < var_stack->size; i++) {
-        if(my_ssstrcmp(var_stack->data[i].str, var) == 0) {
+    for(size_t i = 0; i < ident_stack->size; i++) {
+        if(my_ssstrcmp(ident_stack->data[i], ident) == 0) {
             return i;
         }
     }
     return -1;
 }
 
-size_t add_var(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error) {
-    HARD_ASSERT(var_stack != nullptr, "var_stack is nulltpr");
+size_t add_ident(c_string_t ident, ident_stack_t* ident_stack, error_code* error) {
+    HARD_ASSERT(ident_stack != nullptr, "ident_stack is nulltpr");
 
-    if(error == nullptr) var_stack_push(var_stack, {str, val});
-    else        *error = var_stack_push(var_stack, {str, val});
-    return var_stack->size - 1;
+    if(error == nullptr) ident_stack_push(ident_stack, ident);
+    else        *error = ident_stack_push(ident_stack, ident);
+    return ident_stack->size - 1;
 }
 
-size_t get_or_add_var_idx(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error) {
-    HARD_ASSERT(var_stack != nullptr, "var_stack is nullptr");
+size_t get_or_add_ident_idx(c_string_t ident, ident_stack_t* ident_stack, error_code* error) {
+    HARD_ASSERT(ident_stack != nullptr, "ident_stack is nullptr");
 
-    ssize_t idx = get_var_idx(str, var_stack);
+    ssize_t idx = get_ident_idx(ident, ident_stack);
     if(idx == -1) {
-        return add_var(str, val, var_stack, error);
+        return add_ident(ident, ident_stack, error);
     } 
     return (size_t)idx;
-}
-
-var_val_type get_var_val(const tree_t* tree, const tree_node_t* node) {
-    HARD_ASSERT(tree       != nullptr, "Tree is nullptr");
-    HARD_ASSERT(node       != nullptr, "node is nullptr");
-    HARD_ASSERT(node->type == VARIABLE, "Node is not variable");
-    return tree->var_stack->data[node->value.var_idx].val;
-}
-
-var_val_type put_var_val(const tree_t* tree, size_t var_idx, var_val_type value) {
-    HARD_ASSERT(tree != nullptr, "tree is nullptr");
-    tree->var_stack->data[var_idx].val = value;
-    return value;
 }
 
 c_string_t get_var_name(const tree_t* tree, const tree_node_t* node) {  //REVIEW - Стоит ли node или var_idx
@@ -332,7 +319,7 @@ c_string_t get_var_name(const tree_t* tree, const tree_node_t* node) {  //REVIEW
     HARD_ASSERT(node != nullptr, "Node is nullptr");
     if(node->type != VARIABLE) return {nullptr, 0};
 
-    return tree->var_stack->data[node->value.var_idx].str;
+    return tree->ident_stack->data[node->value.var_idx];
 }   
 
 //--------------------------------------------------------------------------------
@@ -340,44 +327,4 @@ c_string_t get_var_name(const tree_t* tree, const tree_node_t* node) {  //REVIEW
 static void clear_input_buff() {
     int ch = 0;
     while ((ch = getchar()) != '\n' && ch != EOF) {}
-}
-
-static var_val_type take_var(c_string_t var) {
-    HARD_ASSERT(var.ptr != nullptr, "String is nullptr");
-
-    var_val_type num = 0;
-
-    printf("Enter %.*s: ", (int)var.len, var.ptr);
-    int smb_cnt = scanf("%lf", &num);
-    if(smb_cnt == 0) {
-        clear_input_buff();
-        printf("Wrong type. Enter again: ");
-        smb_cnt = scanf("%lf", &num);
-        if(smb_cnt == 0) {
-            LOGGER_ERROR("Wrong type");
-            clear_input_buff();
-            return nan("1");
-        }
-    }
-    return num;
-}
-
-error_code ask_for_vars(const tree_t* tree) {
-    HARD_ASSERT(tree            != nullptr, "Tree is nullptr");
-    HARD_ASSERT(tree->var_stack != nullptr, "Stack is nullptr");
-
-    LOGGER_DEBUG("ask_for_vars: started");
-
-    var_stack_t* var_stack = tree->var_stack;
-    for(size_t i = 0; i < var_stack->size; i++) {
-        if(var_stack->data[i].str.ptr != nullptr) {
-            var_val_type var_val = take_var(var_stack->data[i].str);
-            if(!isnan(var_val)) var_stack->data[i].val = var_val;
-            else {
-                LOGGER_ERROR("Failed to read var");
-                return ERROR_READ_FILE;
-            }
-        }   
-    }
-    return ERROR_NO;
 }

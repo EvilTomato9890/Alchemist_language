@@ -139,8 +139,8 @@ static int try_parse_node_value(tree_t* tree_ptr, node_type_t* node_type_ptr, va
         }
         value_end_ptr = scan_pointer;
         *node_type_ptr = VARIABLE;
-        node_value_ptr->var_idx = get_or_add_var_idx({value_start_ptr, (unsigned long)(value_end_ptr - value_start_ptr)}, 0, 
-                                                      tree_ptr->var_stack, error);
+        node_value_ptr->var_idx = get_or_add_ident_idx({value_start_ptr, (unsigned long)(value_end_ptr - value_start_ptr)},
+                                                      tree_ptr->ident_stack, error);
         
         if(*error != ERROR_NO) {
             LOGGER_ERROR("Add_var error");
@@ -379,7 +379,7 @@ static error_code write_node(const tree_t* tree_ptr, FILE* file_ptr, tree_node_t
     }
     
     if (node_ptr->type == VARIABLE) {
-        c_string_t curr_str = tree_ptr->var_stack->data[node_ptr->value.var_idx].str;
+        c_string_t curr_str = tree_ptr->ident_stack->data[node_ptr->value.var_idx];
         if (fprintf(file_ptr, "\"%.*s\"", (int)curr_str.len, curr_str.ptr) < 0) {
             LOGGER_ERROR("write_node: fprintf failed for variable");
             return ERROR_OPEN_FILE;

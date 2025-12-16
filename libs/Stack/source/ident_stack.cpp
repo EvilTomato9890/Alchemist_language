@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include "error_handler.h"
-#include "var_stack.h"
+#include "ident_stack.h"
 #include "asserts.h"
 #include "logger.h"
 #include "libs/AST/include/node_info.h"
@@ -9,18 +9,18 @@
 #include <string.h>
 
 static const int MIN_STACK_SIZE      = 128;
-static const variable_t POISON_VALUE = {{(char*)0xEBA1DEDA, 0xEBA1DEDA}, 0xEBA1DEDA};
+static const c_string_t POISON_VALUE = {(const char*)0xEBA1DEDA, 0xEBA1DEDA};
 static const float REDUCTION_FACTOR  = 4; // float
 static const float GROWTH_FACTOR     = 2; // float
 
 static const int CANARY_NUM          = INT_MAX;
-static const variable_t CANARY_PTR   = {{nullptr, INT_MAX}, INT_MAX};
+static const c_string_t CANARY_PTR   = {nullptr, INT_MAX};
 
-static error_code normalize_size(var_stack_t* stack);
-static error_code stack_recalloc(var_stack_t* stack, size_t new_capacity);
+static error_code normalize_size(ident_stack_t* stack);
+static error_code stack_recalloc(ident_stack_t* stack, size_t new_capacity);
 
 
-error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, st_ver_info_t ver_info)) {
+error_code ident_stack_init(ident_stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, st_ver_info_t ver_info)) {
 	LOGGER_DEBUG("Stack initialize started");	
 
 	HARD_ASSERT(stack_return != nullptr, "Stack_return is nullptr");
@@ -32,7 +32,7 @@ error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DE
 		capacity = MIN_STACK_SIZE;
 	}
 
-	var_stack_t stack = {};
+	ident_stack_t stack = {};
 	LOGGER_DEBUG("Trying to calloc %lu bytes", (capacity ON_STACK_CANARY_DEBUG(+ 2)) * sizeof(var_st_type));
 	stack.original_ptr = (var_st_type*)calloc(capacity ON_STACK_CANARY_DEBUG(+ 2), sizeof(var_st_type));
 	if(stack.original_ptr == nullptr) {
@@ -67,7 +67,7 @@ error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DE
 		stack_return->ver_info.hash = stack_get_hash(stack_return, &error);
 	)
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack_return);
+		error = ident_stack_verify(stack_return);
 	)
 	if(error != 0) {
 		LOGGER_ERROR("Error code: %lu", error);
@@ -75,7 +75,7 @@ error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DE
 	return error;
 }
 
-error_code var_stack_destroy(var_stack_t* stack) {
+error_code ident_stack_destroy(ident_stack_t* stack) {
 	LOGGER_DEBUG("stack_destroy started");
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
@@ -86,14 +86,14 @@ error_code var_stack_destroy(var_stack_t* stack) {
 }
 
 
-error_code var_stack_push(var_stack_t* stack, var_st_type elem) {
+error_code ident_stack_push(ident_stack_t* stack, var_st_type elem) {
 	LOGGER_DEBUG("Push started, elem = %ld", elem);
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 
 	error_code error = 0;
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 		STACK_RETURN_IF_ERROR(error,);
 	)
 
@@ -109,20 +109,20 @@ error_code var_stack_push(var_stack_t* stack, var_st_type elem) {
 		stack->ver_info.hash = stack_get_hash(stack, &error);
 	)
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 	)
 
 	return error;
 }
 
-static error_code normalize_size(var_stack_t* stack) {
+static error_code normalize_size(ident_stack_t* stack) {
 	LOGGER_DEBUG("Normalize_size started");
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 
 	error_code error = 0;
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 		STACK_RETURN_IF_ERROR(error);
 	)
 
@@ -137,7 +137,7 @@ static error_code normalize_size(var_stack_t* stack) {
 	}
 
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 		STACK_RETURN_IF_ERROR(error);
 	)
 
@@ -154,12 +154,12 @@ static error_code normalize_size(var_stack_t* stack) {
 	}
 
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 	)
 	return error;
 }
 
-static error_code stack_recalloc(var_stack_t* stack, size_t new_capacity) {
+static error_code stack_recalloc(ident_stack_t* stack, size_t new_capacity) {
     LOGGER_DEBUG("Stack_recalloc started");
 
     HARD_ASSERT(stack != nullptr, "Stack is nullptr");
@@ -167,7 +167,7 @@ static error_code stack_recalloc(var_stack_t* stack, size_t new_capacity) {
 
     error_code error = 0;
     ON_STACK_DEBUG(
-    	error = var_stack_verify(stack);
+    	error = ident_stack_verify(stack);
     	STACK_RETURN_IF_ERROR(error);
     )
     if(new_capacity == 0) {
@@ -202,13 +202,13 @@ static error_code stack_recalloc(var_stack_t* stack, size_t new_capacity) {
     	stack->ver_info.hash = stack_get_hash(stack, &error);
     )
     ON_STACK_DEBUG(
-    	error = var_stack_verify(stack);
+    	error = ident_stack_verify(stack);
     )
 
     return error;
 }
 
-var_st_type var_stack_pop(var_stack_t* stack, error_code* error_return) { //Лучше возвращать ошибку или значение? //D c++ разделено на 2 функциии 1 вычитает значение другая возвращает (для души)(какая=то хуйня я не помню)
+var_st_type ident_stack_pop(ident_stack_t* stack, error_code* error_return) { //Лучше возвращать ошибку или значение? //D c++ разделено на 2 функциии 1 вычитает значение другая возвращает (для души)(какая=то хуйня я не помню)
 	LOGGER_DEBUG("Pop stared");
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
@@ -217,16 +217,16 @@ var_st_type var_stack_pop(var_stack_t* stack, error_code* error_return) { //Лу
 
 	error_code error = 0;
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 		if(error != 0) {
 			LOGGER_ERROR("Error code: %lu", error);
 			*error_return = error;
-			return {{nullptr, 0}, 0}; 
+			return {nullptr, 0}; 
 		} else if(stack->size == 0) {
 			error |= ST_SMALL_SIZE_ERROR;
 			LOGGER_ERROR("Error code: %lu", error);
 			*error_return = error;
-			return {{nullptr, 0}, 0};
+			return {nullptr, 0};
 		}
 	)
  	var_st_type popped_elem = stack->data[stack->size - 1];
@@ -242,11 +242,11 @@ var_st_type var_stack_pop(var_stack_t* stack, error_code* error_return) { //Лу
 	if(error != 0) {
 		LOGGER_ERROR("Error code: %lu", error);
 		*error_return = error;
-		return {{nullptr, 0}, 0};
+		return {nullptr, 0};
 	}
 
 	ON_STACK_DEBUG(
-		error = var_stack_verify(stack);
+		error = ident_stack_verify(stack);
 	)
 	return popped_elem;
 }
@@ -259,8 +259,8 @@ var_st_type var_stack_pop(var_stack_t* stack, error_code* error_return) { //Лу
 
 //Почему с большой буквы ищет хрень в онегине
 //Почему нельзя ifdef в define СПРОСИТЬ
-error_code var_stack_verify(const var_stack_t* stack) {
-	//LOGGER_DEBUG("var_stack_verify started");
+error_code ident_stack_verify(const ident_stack_t* stack) {
+	//LOGGER_DEBUG("ident_stack_verify started");
 	error_code error = 0;
 	if(stack == nullptr) {
 		error |= ST_NULL_ARG_ERROR;

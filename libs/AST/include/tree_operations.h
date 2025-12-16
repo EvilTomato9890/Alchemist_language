@@ -4,10 +4,10 @@
 #include "libs/AST/include/tree_info.h"
 #include "libs/AST/include/error_handler.h"
 #include "libs/AST/internal/asserts.h"
-#include "libs/Stack/include/var_stack.h"
+#include "libs/Stack/include/ident_stack.h"
 #include "libs/AST/internal/debug_meta.h"
 
-error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info));
+error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info));
 
 tree_node_t* init_node(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right);
 tree_node_t* init_node_with_dump(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right, const tree_t* tree);
@@ -35,12 +35,10 @@ value_t make_union_var(size_t var_idx);
 value_t make_union_func(func_code_t func);
 value_t make_union_universal(node_type_t type, ...);
 
-ssize_t      get_ident_idx     (c_string_t ident, const var_stack_t* ident_stack);
-size_t       add_ident         (c_string_t str, var_stack_t* var_stack, error_code* error);
-size_t       get_or_add_var_idx(c_string_t str, var_stack_t* var_stack, error_code* error);
-c_string_t   get_var_name      (const tree_t* tree, const tree_node_t* node);
-
-error_code   ask_for_vars(const tree_t* tree);
+ssize_t      get_ident_idx       (c_string_t ident, const ident_stack_t* ident_stack);
+size_t       add_ident           (c_string_t str, ident_stack_t* ident_stack, error_code* error);
+size_t       get_or_add_ident_idx(c_string_t str, ident_stack_t* ident_stack, error_code* error);
+c_string_t   get_var_name        (const tree_t* tree, const tree_node_t* node);
 
 inline tree_node_t* clone_node(const tree_node_t* node) {
     HARD_ASSERT(node != nullptr, "node is nullptr");

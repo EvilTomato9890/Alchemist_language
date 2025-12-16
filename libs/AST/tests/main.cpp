@@ -69,11 +69,11 @@ static int g_failed = 0;
 static tree_t make_empty_tree() {
     tree_t tree = {};
 
-    // ВАЖНО: tree_destroy() делает var_stack_destroy() и free(tree->var_stack),
+    // ВАЖНО: tree_destroy() делает ident_stack_destroy() и free(tree->ident_stack),
     // поэтому стек выделяем на куче.
-    var_stack_t* vs = (var_stack_t*)calloc(1, sizeof(var_stack_t));
+    ident_stack_t* vs = (ident_stack_t*)calloc(1, sizeof(ident_stack_t));
     CHECK_TRUE(vs != nullptr);
-    var_stack_init(vs, 10, STACK_VER_INIT);
+    ident_stack_init(vs, 10, STACK_VER_INIT);
     error_code err = tree_init(&tree, vs ON_TREE_DEBUG(, TREE_VER_INIT));
     CHECK_EQ_INT(err, ERROR_NO);
 
@@ -311,13 +311,13 @@ TEST_CASE(test_write_read_roundtrip_function) {
 TEST_CASE(test_read_write_with_variable) {
     const char* fname = "tree_test_tmp_var.ast";
 
-    // Пытаемся прогнать VARIABLE-ветку (если var_stack_push работает без явного init — ок).
+    // Пытаемся прогнать VARIABLE-ветку (если ident_stack_push работает без явного init — ок).
     {
         tree_t t = make_empty_tree();
 
         error_code err = ERROR_NO;
         c_string_t x = {(char*)"x", 1};
-        size_t idx = get_or_add_var_idx(x, 0.0, t.var_stack, &err);
+        size_t idx = get_or_add_ident_idx(x, t.ident_stack, &err);
         CHECK_EQ_INT(err, ERROR_NO);
 
         tree_node_t* xnode = init_node(VARIABLE, make_union_var(idx), nullptr, nullptr);
