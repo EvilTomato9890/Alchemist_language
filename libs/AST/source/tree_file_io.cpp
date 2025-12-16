@@ -112,13 +112,13 @@ static error_code debug_print_buffer_remainder(tree_t* tree, const char* value_s
         if (remainder_copy != nullptr) {
             memcpy(remainder_copy, value_end, remainder_len);
             remainder_copy[remainder_len] = '\0';
-            error = tree_dump(tree, VER_INIT, true, "After reading node: %s \nBuffer remainder: %s", value_start, remainder_copy);
+            error = tree_dump(tree, TREE_VER_INIT, true, "After reading node: %s \nBuffer remainder: %s", value_start, remainder_copy);
             free(remainder_copy);
         } else {
-            error = tree_dump(tree, VER_INIT, true, "After reading node: %s", value_start);
+            error = tree_dump(tree, TREE_VER_INIT, true, "After reading node: %s", value_start);
         } 
     } else {
-        error = tree_dump(tree, VER_INIT, true, "After reading node: %s", value_start);
+        error = tree_dump(tree, TREE_VER_INIT, true, "After reading node: %s", value_start);
     }
     })
     return error;
@@ -329,12 +329,12 @@ error_code tree_parse_from_buffer(tree_t* tree) {
 
     tree->root = root;
     tree->size = count_nodes_recursive(root);
-    ON_TREE_DEBUG(fflush(*tree->dump_file);)
+    ON_TREE_DEBUG(fflush(tree->dump_file);)
     LOGGER_DEBUG("parse_tree_from_buffer: successfully parsed tree with %zu nodes", tree->size);
     return ERROR_NO;
 }
 
-error_code tree_read_from_file(tree_t* tree, const char* filename) {
+error_code tree_read_from_file(tree_t* tree, const char* filename, string_t* buffer_out) {
     HARD_ASSERT(tree != nullptr, "tree pointer is nullptr");
     HARD_ASSERT(filename != nullptr, "filename is nullptr");
     
@@ -359,10 +359,12 @@ error_code tree_read_from_file(tree_t* tree, const char* filename) {
 
     error = tree_parse_from_buffer(tree);
     if (error != ERROR_NO) {
+        free(buff_str.ptr);
         return error;
     }
     
     LOGGER_DEBUG("tree_read_from_file: successfully read tree with %zu nodes", tree->size);
+    *buffer_out = buff_str;
     return ERROR_NO;
 }
 

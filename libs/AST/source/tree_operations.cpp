@@ -117,7 +117,7 @@ error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, tree_ver_i
     tree->size = 0;
     tree->buff = {nullptr, 0};
 
-    //error = stack_init(stack, 10 ON_TREE_DEBUG(, VER_INIT));
+    //error = stack_init(stack, 10 ON_TREE_DEBUG(, TREE_VER_INIT));
     tree->var_stack = stack;
 
     ON_TREE_DEBUG({
@@ -140,6 +140,7 @@ error_code tree_destroy(tree_t* tree) {
     tree->size = 0;
     error |= var_stack_destroy(tree->var_stack);
     free(tree->var_stack);
+    tree->var_stack = nullptr;
     return error;
 }
 //TODO очистка squashes

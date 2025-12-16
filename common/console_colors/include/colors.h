@@ -16,7 +16,5 @@
 //! @brief Строка, очищающая цвет вывода.
 #define RESET_CONSOLE "\033[0m"
 
-#endif
-
 
 #endif /* COMMON_CONSOLE_COLORS_INCLUDE_COLORS_H_NCLUDED */

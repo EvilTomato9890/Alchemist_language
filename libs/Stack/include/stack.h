@@ -29,7 +29,7 @@ struct stack_t {
 	)
 };
 
-error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, ver_info_t ver_info));
+error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, st_ver_info_t ver_info));
 
 error_code stack_destroy(stack_t* stack);
 
@@ -39,6 +39,6 @@ error_code stack_push(stack_t* stack, st_type elem);
 
 st_type stack_pop(stack_t* stack, error_code* error_return); //Лучше возвращать ошибку или значение?
 
-error_code stack_clone(const stack_t* source, stack_t* dest ON_STACK_DEBUG(, ver_info_t ver_info));
+error_code stack_clone(const stack_t* source, stack_t* dest ON_STACK_DEBUG(, st_ver_info_t ver_info));
 
 #endif /* LIBS_STACK_INCLUDE_STACK_H_NCLUDED */

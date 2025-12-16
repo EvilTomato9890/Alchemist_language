@@ -247,7 +247,7 @@ static int dump_make_graphviz_svg(const tree_t* tree, const char* base) {
 }
 
 error_code tree_verify(const tree_t* tree,
-                       ver_info_t ver_info,
+                       tree_ver_info_t ver_info,
                        tree_dump_mode_t mode,
                        const char* fmt, ...) {
     (void)fmt;
@@ -268,7 +268,7 @@ static const char* node_type_to_string(node_type_t type) {
     }
 }
 static error_code write_html(const tree_t* tree,
-                             ver_info_t ver_info_called,
+                             tree_ver_info_t ver_info_called,
                              int idx, const char* comment,
                              const char* svg_path, int is_visual) {
     if (!tree || !tree->dump_file || !*tree->dump_file) {
@@ -358,7 +358,7 @@ static error_code write_html(const tree_t* tree,
 }
 
 error_code tree_dump(const tree_t* tree,
-                     ver_info_t ver_info,
+                     tree_ver_info_t ver_info,
                      bool is_visual,
                      const char* fmt, ...) {
     LOGGER_DEBUG("Dump started");

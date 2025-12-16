@@ -30,7 +30,7 @@ struct var_stack_t {
 	)
 };
 
-error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, ver_info_t ver_info));
+error_code var_stack_init(var_stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, st_ver_info_t ver_info));
 
 error_code var_stack_destroy(var_stack_t* stack);
 
@@ -40,6 +40,6 @@ error_code var_stack_push(var_stack_t* stack, var_st_type elem);
 
 var_st_type var_stack_pop(var_stack_t* stack, error_code* error_return); //Лучше возвращать ошибку или значение?
 
-error_code var_stack_clone(const var_stack_t* source, var_stack_t* dest ON_STACK_DEBUG(, ver_info_t ver_info));
+error_code var_stack_clone(const var_stack_t* source, var_stack_t* dest ON_STACK_DEBUG(, st_ver_info_t ver_info));
 
 #endif /* LIBS_STACK_INCLUDE_VAR_STACK_H_NCLUDED */

@@ -19,7 +19,7 @@ static error_code normalize_size(stack_t* stack);
 static error_code stack_recalloc(stack_t* stack, size_t new_capacity);
 
 
-error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, ver_info_t ver_info)) {
+error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, st_ver_info_t ver_info)) {
 	LOGGER_DEBUG("Stack initialize started");	
 
 	HARD_ASSERT(stack_return != nullptr, "Stack_return is nullptr");
@@ -32,7 +32,7 @@ error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, ve
 	}
 
 	stack_t stack = {};
-	LOGGER_DEBUG("Trying to calloc %lu bytes", (capacity ON_STACK_STACK_CANARY_DEBUG(+ 2)) * sizeof(st_type));
+	LOGGER_DEBUG("Trying to calloc %lu bytes", (capacity ON_STACK_CANARY_DEBUG(+ 2)) * sizeof(st_type));
 	stack.original_ptr = (st_type*)calloc(capacity ON_STACK_CANARY_DEBUG(+ 2), sizeof(st_type));
 	if(stack.original_ptr == nullptr) {
 		LOGGER_DEBUG("Memory allocation failed");
@@ -86,14 +86,14 @@ error_code stack_destroy(stack_t* stack) {
 
 
 error_code stack_push(stack_t* stack, st_type elem) {
-	LOGGER_DEBUG("Push started, elem = %p", (void*)elem);
+	LOGGER_DEBUG("Push started, elem = %ld", elem);
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 
 	error_code error = 0;
 	ON_STACK_DEBUG(
 		error = stack_verify(stack);
-		RETURN_IF_ERROR(error);
+		STACK_RETURN_IF_ERROR(error);
 	)
 
 	ON_STACK_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
@@ -167,7 +167,7 @@ static error_code stack_recalloc(stack_t* stack, size_t new_capacity) {
     error_code error = 0;
     ON_STACK_DEBUG(
     	error = stack_verify(stack);
-    	RETURN_IF_ERROR(error);
+    	STACK_RETURN_IF_ERROR(error);
     )
     if(new_capacity == 0) {
 		LOGGER_WARNING("Realloc_size is null");

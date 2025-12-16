@@ -44,7 +44,4 @@ void logger_log_message(logger_mode_type mode,
 #define LOGGER_ERROR(...)  
 #endif
 
-#endif
-
-
 #endif /* COMMON_LOGGER_INCLUDE_LOGGER_H_NCLUDED */
