@@ -1,13 +1,13 @@
-#ifndef TREE_OPERATIONS_H_INCLUDED
-#define TREE_OPERATIONS_H_INCLUDED
+#ifndef LIBS_AST_INCLUDE_TREE_OPERATIONS_H_NCLUDED
+#define LIBS_AST_INCLUDE_TREE_OPERATIONS_H_NCLUDED
 
-#include "tree_info.h"
-#include "error_handler.h"
-#include "asserts.h"
-#include "../libs/StackDead-main/stack.h"
-#include "debug_meta.h"
+#include "libs/AST/include/tree_info.h"
+#include "libs/AST/include/error_handler.h"
+#include "libs/AST/internal/asserts.h"
+#include "libs/Stack/include/var_stack.h"
+#include "libs/AST/internal/debug_meta.h"
 
-error_code tree_init(tree_t* tree, stack_t* stack ON_DEBUG(, ver_info_t ver_info));
+error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, ver_info_t ver_info));
 
 tree_node_t* init_node(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right);
 tree_node_t* init_node_with_dump(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right, const tree_t* tree);
@@ -35,9 +35,9 @@ value_t make_union_var(size_t var_idx);
 value_t make_union_func(func_type_t func);
 value_t make_union_universal(node_type_t type, ...);
 
-ssize_t      get_var_idx       (c_string_t var, const stack_t* var_stack);
-size_t       add_var           (c_string_t str, var_val_type val, stack_t* var_stack, error_code* error);
-size_t       get_or_add_var_idx(c_string_t str, var_val_type val, stack_t* var_stack, error_code* error);
+ssize_t      get_var_idx       (c_string_t var, const var_stack_t* var_stack);
+size_t       add_var           (c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error);
+size_t       get_or_add_var_idx(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error);
 var_val_type get_var_val       (const tree_t* tree, const tree_node_t* node);
 c_string_t   get_var_name      (const tree_t* tree, const tree_node_t* node);
 
@@ -49,7 +49,7 @@ inline tree_node_t* clone_node(const tree_node_t* node) {
     return init_node(node->type, node->value, node->left, node->right);
 }
 
-tree_node_t* subtree_deep_copy(const tree_node_t* node, error_code* error ON_DUMP_CREATION_DEBUG(, const tree_t* tree));
-tree_node_t* clone_child_subtree(tree_node_t* node, error_code* error ON_DUMP_CREATION_DEBUG(, const tree_t* tree));
+tree_node_t* subtree_deep_copy(const tree_node_t* node, error_code* error ON_TREE_DUMP_CREATION_DEBUG(, const tree_t* tree));
+tree_node_t* clone_child_subtree(tree_node_t* node, error_code* error ON_TREE_DUMP_CREATION_DEBUG(, const tree_t* tree));
 
-#endif
+#endif /* LIBS_AST_INCLUDE_TREE_OPERATIONS_H_NCLUDED */

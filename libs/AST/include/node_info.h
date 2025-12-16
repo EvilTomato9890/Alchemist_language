@@ -1,7 +1,7 @@
-#ifndef NODE_INFO_H_INCLUDED
-#define NODE_INFO_H_INCLUDED
+#ifndef LIBS_AST_INCLUDE_NODE_INFO_H_NCLUDED
+#define LIBS_AST_INCLUDE_NODE_INFO_H_NCLUDED
 
-#include "my_string.h"
+#include "libs/My_string/include/my_string.h"
 
 #define HANDLE_FUNC(name, ...) name,
 
@@ -42,4 +42,4 @@ struct tree_node_t {
 };
 
 
-#endif
+#endif /* LIBS_AST_INCLUDE_NODE_INFO_H_NCLUDED */

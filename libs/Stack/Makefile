@@ -1,15 +1,15 @@
 
-PROJECT   ?= tree
-    
+PROJECT   ?= stack
+
 SRC_DIR   := source
 INC_DIR   := include
 INT_DIR   := internal
 TST_DIR   := tests
-    
+
 BUILD_DIR ?= build
 OBJ_DIR   := $(BUILD_DIR)/obj
 BIN_DIR   := $(BUILD_DIR)/bin
-LIB_DIR   ?= $(BUILD_DIR)/lib
+LIB_DIR   := $(BUILD_DIR)/lib
 
 CXX       ?= g++
 AR        ?= ar
@@ -72,11 +72,6 @@ DEPS := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
 
 # ================================================================================
 
-EXT_LIB_DIR    ?= ../libs/Stack          
-EXT_LIB_TARGET ?= lib                       
-EXT_LIB_A      ?= $(EXT_LIB_DIR)/build/lib/libotherlib.a  
-
-# ================================================================================
 .PHONY: all test lib clean help
 
 all: test

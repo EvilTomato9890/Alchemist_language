@@ -1,15 +1,15 @@
-#ifndef TREE_INFO_H_INCLUDED
-#define TREE_INFO_H_INCLUDED
+#ifndef LIBS_AST_INCLUDE_TREE_INFO_H_NCLUDED
+#define LIBS_AST_INCLUDE_TREE_INFO_H_NCLUDED
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "debug_meta.h"
-#include "node_info.h"
-#include "../libs/StackDead-main/stack.h"
-#include "my_string.h"
+#include "libs/AST/internal/debug_meta.h"
+#include "libs/AST/include/node_info.h"
+#include "libs/Stack/include/var_stack.h"
+#include "libs/My_string/include/my_string.h"
 
-const int MAX_FOREST_CAP = 10;
+const int MAX_FOREST_CAP = 10; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!porno
 
 struct tex_squash_binding_t {
     char         letter;
@@ -19,19 +19,12 @@ struct tex_squash_binding_t {
 struct tree_t {
     tree_node_t*   root;
     size_t         size;
-    stack_t*       var_stack;
+    var_stack_t*   var_stack;
     c_string_t     buff;
-    size_t         list_idx;
-    ON_DEBUG(
-        ver_info_t ver_info;
-        FILE* const * dump_file;
-    )
-    FILE* const * tex_file;
-    ON_TEX_SQUASH(
-        tree_node_t*           squash_root;
-        tex_squash_binding_t*  squash_bindings;
-        size_t                 squash_count;
+    ON_TREE_DEBUG(
+        tree_ver_info_t ver_info;
+        FILE* dump_file;
     )
 };
 
-#endif
+#endif /* LIBS_AST_INCLUDE_TREE_INFO_H_NCLUDED */

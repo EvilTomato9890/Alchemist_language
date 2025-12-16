@@ -1,5 +1,5 @@
-#ifndef ERROR_HANDLER_H_INCLUDED
-#define ERROR_HANDLER_H_INCLUDED
+#ifndef LIBS_AST_INCLUDE_ERROR_HANDLER_H_NCLUDED
+#define LIBS_AST_INCLUDE_ERROR_HANDLER_H_NCLUDED
 
 enum error_type {
 	ERROR_NO 			     = 0,
@@ -25,4 +25,4 @@ enum error_type {
 typedef long error_code;
 
 
-#endif
+#endif /* LIBS_AST_INCLUDE_ERROR_HANDLER_H_NCLUDED */

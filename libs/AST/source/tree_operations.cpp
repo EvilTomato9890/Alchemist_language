@@ -12,11 +12,8 @@
 #include "tree_verification.h"
 #include "tree_info.h"
 #include "error_handler.h"
-#include "stack.h"
-#include "forest_operations.h"
-#include "forest_info.h"
-#include "my_string.h"
-#include "tex_io.h"
+#include "libs/Stack/include/var_stack.h"
+#include "libs/My_string/include/my_string.h"
 
 //================================================================================
 
@@ -75,11 +72,6 @@ tree_node_t* init_node(node_type_t node_type, value_t value, tree_node_t* left, 
     node->value  = value;
     node->left   = left;
     node->right  = right;
-    ON_TEX_SQUASH(
-    node->subtree_tex_len = 0;   
-    node->tex_len_multiplier = 1;
-    node->squash_id = -1;         
-    )
     return node;
 }
 
@@ -90,7 +82,7 @@ tree_node_t* init_node_with_dump(node_type_t node_type, value_t value, tree_node
     tree_t tree_clone = {};
     tree_clone = *tree;
     tree_change_root(&tree_clone, node);
-    tree_dump(&tree_clone, VER_INIT, true, "DSL dumps");
+    tree_dump(&tree_clone, TREE_VER_INIT, true, "DSL dumps");
     
     return node;
 }
@@ -114,28 +106,25 @@ error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out) {
     return error;
 }
 
-error_code tree_init(tree_t* tree, stack_t* stack ON_DEBUG(, ver_info_t ver_info)) {
+error_code tree_init(tree_t* tree, var_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info)) {
     HARD_ASSERT(tree != nullptr, "tree pointer is nullptr");
 
     LOGGER_DEBUG("tree_init: started");
 
     error_code error = ERROR_NO;
+
     tree->root = nullptr;
     tree->size = 0;
     tree->buff = {nullptr, 0};
 
-    //error = stack_init(stack, 10 ON_DEBUG(, VER_INIT));
+    //error = stack_init(stack, 10 ON_TREE_DEBUG(, VER_INIT));
     tree->var_stack = stack;
 
-    ON_DEBUG({
+    ON_TREE_DEBUG({
         tree->ver_info  = ver_info;
         tree->dump_file = nullptr;
     })
-    ON_TEX_SQUASH( 
-        tree->squash_bindings = nullptr;
-        tree->squash_count    = 0;
-        tree->squash_root     = nullptr;
-    )
+
     return error;
 }
 
@@ -149,21 +138,19 @@ error_code tree_destroy(tree_t* tree) {
     error |= destroy_node_recursive(tree->root, &removed);
     tree->root = nullptr;
     tree->size = 0;
-    ON_TEX_SQUASH(  
-        tree->squash_root = nullptr;
-        tex_clear_squash(tree);
-    )
+    error |= var_stack_destroy(tree->var_stack);
+    free(tree->var_stack);
     return error;
 }
 //TODO очистка squashes
 
-tree_node_t* subtree_deep_copy(const tree_node_t* node, error_code* error ON_DUMP_CREATION_DEBUG(, const tree_t* tree)) {
+tree_node_t* subtree_deep_copy(const tree_node_t* node, error_code* error ON_TREE_DUMP_CREATION_DEBUG(, const tree_t* tree)) {
 
     if (error != nullptr && *error != ERROR_NO) return nullptr;
     if (node == nullptr) return nullptr;
 
-    tree_node_t* left_copy  = subtree_deep_copy(node->left,  error ON_DUMP_CREATION_DEBUG(, tree));
-    tree_node_t* right_copy = subtree_deep_copy(node->right, error ON_DUMP_CREATION_DEBUG(, tree));
+    tree_node_t* left_copy  = subtree_deep_copy(node->left,  error ON_TREE_DUMP_CREATION_DEBUG(, tree));
+    tree_node_t* right_copy = subtree_deep_copy(node->right, error ON_TREE_DUMP_CREATION_DEBUG(, tree));
 
     if (error != nullptr && *error != ERROR_NO) {
         return nullptr;
@@ -221,7 +208,7 @@ tree_node_t* tree_init_root(tree_t* tree, node_type_t node_type, value_t value) 
 
 error_code tree_change_root(tree_t* tree, tree_node_t* node) {
     HARD_ASSERT(tree != nullptr, "Tree is nullptr");
-    if(!node) LOGGER_WARNING("New root is nullptr");
+    if(!node) {LOGGER_WARNING("New root is nullptr");}
 
     error_code error = ERROR_NO;
 
@@ -297,7 +284,7 @@ error_code tree_replace_value(tree_node_t* node, node_type_t node_type, value_t 
 
 //================================================================================
 
-ssize_t get_var_idx(c_string_t var, const stack_t* var_stack) {
+ssize_t get_var_idx(c_string_t var, const var_stack_t* var_stack) {
     HARD_ASSERT(var_stack != nullptr, "var_stack is nullptr");
 
     for(size_t i = 0; i < var_stack->size; i++) {
@@ -308,15 +295,15 @@ ssize_t get_var_idx(c_string_t var, const stack_t* var_stack) {
     return -1;
 }
 
-size_t add_var(c_string_t str, var_val_type val, stack_t* var_stack, error_code* error) {
+size_t add_var(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error) {
     HARD_ASSERT(var_stack != nullptr, "var_stack is nulltpr");
 
-    if(error == nullptr) stack_push(var_stack, {str, val});
-    else        *error = stack_push(var_stack, {str, val});
+    if(error == nullptr) var_stack_push(var_stack, {str, val});
+    else        *error = var_stack_push(var_stack, {str, val});
     return var_stack->size - 1;
 }
 
-size_t get_or_add_var_idx(c_string_t str, var_val_type val, stack_t* var_stack, error_code* error) {
+size_t get_or_add_var_idx(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error) {
     HARD_ASSERT(var_stack != nullptr, "var_stack is nullptr");
 
     ssize_t idx = get_var_idx(str, var_stack);
@@ -380,7 +367,7 @@ error_code ask_for_vars(const tree_t* tree) {
 
     LOGGER_DEBUG("ask_for_vars: started");
 
-    stack_t* var_stack = tree->var_stack;
+    var_stack_t* var_stack = tree->var_stack;
     for(size_t i = 0; i < var_stack->size; i++) {
         if(var_stack->data[i].str.ptr != nullptr) {
             var_val_type var_val = take_var(var_stack->data[i].str);
