@@ -1,0 +1,36 @@
+/*
+HANDLE_FUNC(op_code, str_name, is_operator func in code,     args_cnt, DSL for deriv)
+*/      
+HANDLE_FUNC(ADD,     +,        true,       a + b,            2,        ADD_(d(l), d(r)))                  // (u + v)' = u' + v' //REVIEW - Добавить ли флаги дял оптимизации
+HANDLE_FUNC(SUB,     -,        true,       a - b,            2,        SUB_(d(l), d(r)))                  // (u - v)' = u' - v'   
+HANDLE_FUNC(MUL,     *,        true,       a * b,            2,        ADD_(MUL_(d(l), cpy(r)),           // (u * v)' = u'v + uv' 
+                                                                            MUL_(cpy(l), d(r))))         
+HANDLE_FUNC(DIV,     /,        true,       a / b,            2,        DIV_(SUB_(MUL_(d(l), cpy(r)),      // (u / v)' = (u'v - uv') / v^2  
+                                                                                 MUL_(cpy(l), d(r))), 
+                                                                            MUL_(cpy(r), cpy(r))))  
+ 
+ 
+HANDLE_FUNC(POW,     ^,        true,       pow(a, b),        2,        get_pow_diff(l, r, args_arr ON_TEX_CREATION_DEBUG(, tree)))
+HANDLE_FUNC(LOG,     log,      false,      log(b) / log(a),  2,        get_log_diff(l, r, args_arr ON_TEX_CREATION_DEBUG(, tree))) 
+
+HANDLE_FUNC(LN,      ln,       false,      log(a),           1,        DIV_(d(l), cpy(l)))                // (ln u)' = 1 / u * u'
+HANDLE_FUNC(EXP,     exp,      false,      exp(a),           1,        MUL_(POW_(c(M_E), cpy(l)), d(l)))  // (e^u)'  = e^u * u'
+                    
+                    
+HANDLE_FUNC(SIN,     sin,      false,      sin(a),           1,        MUL_(COS_(cpy(l)), d(l)))                                 // (sin u)'  = cos(u) * u'                                                                                     
+HANDLE_FUNC(COS,     cos,      false,      cos(a),           1,        MUL_(MUL_(c(-1), SIN_(cpy(l))), d(l)))                     // (cos u)'  = -sin(u) * u'  
+HANDLE_FUNC(TAN,     tan,      false,      tan(a),           1,        DIV_(d(l), MUL_(COS_(cpy(l)), COS_(cpy(l)))))             // (tan u)'  = 1 / cos(u)^2 * u'
+HANDLE_FUNC(CTAN,    ctan,     false,      1.0 / tan(a),     1,        SUB_(c(0), DIV_(d(l), ADD_(c(1), MUL_(cpy(l), cpy(l)))))) // (ctan u)' = -1 / sin(u)^2 * u'
+                                   
+                                   
+HANDLE_FUNC(ARCSIN,  asin,     false,      asin(a),          1,        DIV_(d(l), POW_(SUB_(c(1), MUL_(cpy(l), cpy(l))), c(0.5))))         // (arcsin u)'  = 1 / sqrt(1 - u^2) * u'
+HANDLE_FUNC(ARCCOS,  acos,     false,      acos(a),          1,        SUB_(c(0), DIV_(d(l), POW_(SUB_(c(1), 
+                                                                                       MUL_(cpy(l), cpy(l))), c(0.5))))) // (arccos u)'  = -1 / sqrt(1 - u^2) * u'
+HANDLE_FUNC(ARCTAN,  atan,     false,      atan(a),          1,        DIV_(d(l), ADD_(c(1), MUL_(cpy(l), cpy(l)))))                       // (arctan u)'  = 1 / (1 + u^2) * u'   
+HANDLE_FUNC(ARCCTAN, actan,    false,      M_PI_2 - atan(a), 1,        SUB_(c(0), DIV_(d(l), ADD_(c(1), MUL_(cpy(l), cpy(l))))))           // (arcctan u)' = -1 / (1 + u^2) * u'
+          
+
+HANDLE_FUNC(CH,      ch,       false,      cosh(a),          1,        MUL_(SH_(cpy(l)), d(l))) // (ch u)' = sh u * u'
+HANDLE_FUNC(SH,      sh,       false,      sinh(a),          1,        MUL_(CH_(cpy(l)), d(l))) // (sh u)' = ch u * u'
+HANDLE_FUNC(ARCSH,   ash,      false,      asinh(a),         1,        DIV_(d(l), POW_(ADD_(c(1), MUL_(cpy(l), cpy(l))), c(0.5)))) // (arcsh u)' = 1 / sqrt(1 + u^2) * u'
+HANDLE_FUNC(ARCCH,   ach,      false,      acosh(a),         1,        DIV_(d(l), POW_(SUB_(MUL_(cpy(l), cpy(l)), c(1)), c(0.5)))) // (arcch u)' = 1 / sqrt(u^2 - 1) * u'
