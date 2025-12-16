@@ -59,8 +59,8 @@ endif
 
 # ================================================================================
 
-LIB_SRC := $(shell find $(SRC_DIR) -type f \( -name '*.cpp' -o -name '*.c' \))
-TST_SRC := $(shell find $(TST_DIR) -type f \( -name '*.cpp' -o -name '*.c' \))
+LIB_SRC  := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.c)
+TST_SRC  := $(wildcard $(TST_DIR)/*.cpp) $(wildcard $(TST_DIR)/*.c)
 
 LIB_OBJS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(patsubst %.c,$(OBJ_DIR)/%.o,$(LIB_SRC)))
 TST_OBJS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(patsubst %.c,$(OBJ_DIR)/%.o,$(TST_SRC)))
@@ -68,7 +68,8 @@ TST_OBJS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(patsubst %.c,$(OBJ_DIR)/%.o,$(TST_
 LIB_PATH := $(LIB_DIR)/lib$(PROJECT).a
 TST_EXE  := $(BIN_DIR)/$(PROJECT)_tests
 
-DEPS := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
+DEPS     := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
+
 
 # ================================================================================
 

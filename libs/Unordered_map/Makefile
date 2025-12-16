@@ -1,5 +1,5 @@
 
-PROJECT   ?= my_string
+PROJECT   ?= u_map
 
 SRC_DIR   := source
 INC_DIR   := include
