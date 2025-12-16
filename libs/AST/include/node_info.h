@@ -6,19 +6,12 @@
 
 
 typedef double const_val_type;
-typedef double var_val_type;
-
-struct variable_t {
-    c_string_t   str;
-    var_val_type val;
-};
 
 enum node_type_t {
     FUNCTION,
     CONSTANT,
     VARIABLE
 };
-
 
 union value_t {
     const_val_type constant;

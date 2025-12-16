@@ -35,14 +35,12 @@ value_t make_union_var(size_t var_idx);
 value_t make_union_func(func_code_t func);
 value_t make_union_universal(node_type_t type, ...);
 
-ssize_t      get_var_idx       (c_string_t var, const var_stack_t* var_stack);
-size_t       add_var           (c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error);
-size_t       get_or_add_var_idx(c_string_t str, var_val_type val, var_stack_t* var_stack, error_code* error);
-var_val_type get_var_val       (const tree_t* tree, const tree_node_t* node);
+ssize_t      get_ident_idx     (c_string_t ident, const var_stack_t* ident_stack);
+size_t       add_ident         (c_string_t str, var_stack_t* var_stack, error_code* error);
+size_t       get_or_add_var_idx(c_string_t str, var_stack_t* var_stack, error_code* error);
 c_string_t   get_var_name      (const tree_t* tree, const tree_node_t* node);
 
 error_code   ask_for_vars(const tree_t* tree);
-var_val_type put_var_val (const tree_t* tree, size_t var_idx, var_val_type value);
 
 inline tree_node_t* clone_node(const tree_node_t* node) {
     HARD_ASSERT(node != nullptr, "node is nullptr");
