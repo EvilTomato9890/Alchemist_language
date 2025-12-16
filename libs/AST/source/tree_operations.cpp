@@ -27,7 +27,7 @@ value_t make_union_var(size_t var_idx) {
     return val;
 }
 
-value_t make_union_func(func_type_t func) {
+value_t make_union_func(func_code_t func) {
     value_t val = {.func = func};
     return val;
 }
@@ -51,7 +51,7 @@ value_t make_union_universal(node_type_t type, ...) {
         }
         case FUNCTION: {
             int func = va_arg(ap, int);
-            val.func = (func_type_t)func;
+            val.func = (func_code_t)func;
             break;
         }
         default:

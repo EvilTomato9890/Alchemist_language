@@ -2,14 +2,7 @@
 #define LIBS_AST_INCLUDE_NODE_INFO_H_NCLUDED
 
 #include "libs/My_string/include/my_string.h"
-
-#define HANDLE_FUNC(name, ...) name,
-
-enum func_type_t {
-    #include "../source/copy_past_file"
-};
-
-#undef HANDLE_FUNC
+#include "libs/AST/include/builtin_func_info.h"
 
 
 typedef double const_val_type;
@@ -30,8 +23,7 @@ enum node_type_t {
 union value_t {
     const_val_type constant;
     size_t         var_idx;
-    func_type_t    func;
-
+    func_code_t func;
 };
 
 struct tree_node_t {

@@ -89,7 +89,7 @@ static tree_node_t* mk_const(double x) {
     return init_node(CONSTANT, make_union_const(x), nullptr, nullptr);
 }
 
-static tree_node_t* mk_func(func_type_t f, tree_node_t* l, tree_node_t* r) {
+static tree_node_t* mk_func(func_code_t f, tree_node_t* l, tree_node_t* r) {
     return init_node(FUNCTION, make_union_func(f), l, r);
 }
 

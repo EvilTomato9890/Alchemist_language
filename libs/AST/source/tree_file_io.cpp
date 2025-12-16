@@ -15,33 +15,16 @@
 #include "libs/Stack/include/stack.h"
 #include "libs/My_string/include/my_string.h"
 #include "common/file_operations/include/file_operations.h"
+#include "builtin_func_info.h"
 
 //================================================================================
 
-struct func_struct {
-    func_type_t func_type;
-    const char* func_name;
-};
-
-#define HANDLE_FUNC(op_code, str_name, ...) \
-    {op_code, #str_name},
-
-static func_struct op_codes[] = {
-    #include "copy_past_file"
-};
-
-#undef HANDLE_FUNC
-
-const int op_codes_num = sizeof(op_codes) / sizeof(func_struct);
-
-//================================================================================
-
-static func_type_t get_op_code(c_string_t func_str, error_code* error) {
+static func_code_t get_op_code(c_string_t func_str, error_code* error) {
     HARD_ASSERT(func_str.ptr != nullptr, "func_name nullptr");
-    LOGGER_DEBUG("A: %d", op_codes_num);
-    for(size_t i = 0; i < op_codes_num; i++) {
-        LOGGER_DEBUG("AA: %d и %s", op_codes[i].func_type, op_codes[i].func_name);
-        if(my_scstrcmp(func_str, op_codes[i].func_name) == 0) return op_codes[i].func_type;
+    LOGGER_DEBUG("A: %d", builtin_func_table_size);
+    for(size_t i = 0; i < builtin_func_table_size; i++) {
+        LOGGER_DEBUG("AA: %d и %s", builtin_func_table[i].code, builtin_func_table[i].code);
+        if(my_scstrcmp(func_str, builtin_func_table[i].name) == 0) return builtin_func_table[i].code;
     }
 
     LOGGER_ERROR("Func doesn`t found");
@@ -368,10 +351,10 @@ error_code tree_read_from_file(tree_t* tree, const char* filename, string_t* buf
     return ERROR_NO;
 }
 
-const char* get_func_name_by_type(func_type_t func_type_value) {
-    for (size_t index_value = 0; index_value < (size_t)op_codes_num; ++index_value) {
-        if (op_codes[index_value].func_type == func_type_value) {
-            return op_codes[index_value].func_name;
+const char* get_func_name_by_type(func_code_t func_type_value) {
+    for (size_t index_value = 0; index_value < (size_t)builtin_func_table; ++index_value) {
+        if (builtin_func_table[index_value].code == func_type_value) {
+            return builtin_func_table[index_value].name;
         }
     }
 

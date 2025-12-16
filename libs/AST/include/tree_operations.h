@@ -32,7 +32,7 @@ error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out);
 
 value_t make_union_const(const_val_type constant);
 value_t make_union_var(size_t var_idx);
-value_t make_union_func(func_type_t func);
+value_t make_union_func(func_code_t func);
 value_t make_union_universal(node_type_t type, ...);
 
 ssize_t      get_var_idx       (c_string_t var, const var_stack_t* var_stack);
