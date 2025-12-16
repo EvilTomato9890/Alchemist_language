@@ -1,15 +1,16 @@
+#include <stdlib.h>
+
 #include "error_handler.h"
 #include "stack.h"
-#include "stdlib.h"
 #include "asserts.h"
 #include "logger.h"
-#include "AST/include/node_info.h"
+#include "debug_meta.h"
 
 #include <string.h>
 
 static const int MIN_STACK_SIZE      = 128;
-static const double POISON_VALUE = (double)0xEBA1DEDAEBA1DEDA;
-static const float REDUCTION_FACTOR  = 4; // float
+static const double POISON_STACK_VALUE = (double)0xEBA1DEDAEBA1DEDA;
+static const float REDUCTION_STACK_FACTOR  = 4; // float
 static const float GROWTH_FACTOR     = 2; // float
 
 static const int CANARY_NUM          = INT_MAX;
@@ -18,7 +19,7 @@ static error_code normalize_size(stack_t* stack);
 static error_code stack_recalloc(stack_t* stack, size_t new_capacity);
 
 
-error_code stack_init(stack_t* stack_return, size_t capacity ON_DEBUG(, ver_info_t ver_info)) {
+error_code stack_init(stack_t* stack_return, size_t capacity ON_STACK_DEBUG(, ver_info_t ver_info)) {
 	LOGGER_DEBUG("Stack initialize started");	
 
 	HARD_ASSERT(stack_return != nullptr, "Stack_return is nullptr");
@@ -31,8 +32,8 @@ error_code stack_init(stack_t* stack_return, size_t capacity ON_DEBUG(, ver_info
 	}
 
 	stack_t stack = {};
-	LOGGER_DEBUG("Trying to calloc %lu bytes", (capacity ON_CANARY_DEBUG(+ 2)) * sizeof(st_type));
-	stack.original_ptr = (st_type*)calloc(capacity ON_CANARY_DEBUG(+ 2), sizeof(st_type));
+	LOGGER_DEBUG("Trying to calloc %lu bytes", (capacity ON_STACK_STACK_CANARY_DEBUG(+ 2)) * sizeof(st_type));
+	stack.original_ptr = (st_type*)calloc(capacity ON_STACK_CANARY_DEBUG(+ 2), sizeof(st_type));
 	if(stack.original_ptr == nullptr) {
 		LOGGER_DEBUG("Memory allocation failed");
 		error |= ST_MEM_ALLOC_ERROR;
@@ -41,7 +42,7 @@ error_code stack_init(stack_t* stack_return, size_t capacity ON_DEBUG(, ver_info
 	LOGGER_DEBUG("Allocation complete");
 
 	stack.data = stack.original_ptr;
-	ON_CANARY_DEBUG(
+	ON_STACK_CANARY_DEBUG(
 		LOGGER_DEBUG("Canary initialize");
 		stack.canary_begin = CANARY_NUM;
 		stack.canary_end = CANARY_NUM;
@@ -52,19 +53,19 @@ error_code stack_init(stack_t* stack_return, size_t capacity ON_DEBUG(, ver_info
 
 	LOGGER_DEBUG("Filling the array");
 	for(size_t i = 0; i < capacity; i++) {
-		stack.data[i] = POISON_VALUE;
+		stack.data[i] = POISON_STACK_VALUE;
 	}
 	stack.capacity = capacity;
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		stack.ver_info = ver_info;
 	)
-	ON_DEBUG(stack.is_constructed = true;)
+	ON_STACK_DEBUG(stack.is_constructed = true;)
 	*stack_return = stack;
 
-	ON_HASH_DEBUG(
+	ON_STACK_HASH_DEBUG(
 		stack_return->ver_info.hash = stack_get_hash(stack_return, &error);
 	)
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack_return);
 	)
 	if(error != 0) {
@@ -77,7 +78,7 @@ error_code stack_destroy(stack_t* stack) {
 	LOGGER_DEBUG("stack_destroy started");
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
-	ON_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
+	ON_STACK_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
 
 	free(stack->original_ptr);
 	return 0;
@@ -90,23 +91,23 @@ error_code stack_push(stack_t* stack, st_type elem) {
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 
 	error_code error = 0;
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
 		RETURN_IF_ERROR(error);
 	)
 
-	ON_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
+	ON_STACK_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
 
 	error = normalize_size(stack);
-	RETURN_IF_ERROR(error);
+	STACK_RETURN_IF_ERROR(error);
 	
 	stack->size++;
 	stack->data[stack->size - 1] = elem;
 	
-	ON_HASH_DEBUG(
+	ON_STACK_HASH_DEBUG(
 		stack->ver_info.hash = stack_get_hash(stack, &error);
 	)
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
 	)
 
@@ -119,24 +120,24 @@ static error_code normalize_size(stack_t* stack) {
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 
 	error_code error = 0;
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
-		RETURN_IF_ERROR(error);
+		STACK_RETURN_IF_ERROR(error);
 	)
 
-	if((float)stack->size * REDUCTION_FACTOR < (float)stack->capacity && stack->capacity > MIN_STACK_SIZE) {
-		size_t new_capacity = (size_t)((float)stack->size * (REDUCTION_FACTOR / GROWTH_FACTOR));
+	if((float)stack->size * REDUCTION_STACK_FACTOR < (float)stack->capacity && stack->capacity > MIN_STACK_SIZE) {
+		size_t new_capacity = (size_t)((float)stack->size * (REDUCTION_STACK_FACTOR / GROWTH_FACTOR));
 		if (new_capacity < MIN_STACK_SIZE) new_capacity = MIN_STACK_SIZE;
 		LOGGER_DEBUG("Trying to stack_recalloc data for %lu elemets", new_capacity);
 		error = stack_recalloc(stack, new_capacity); 
-		RETURN_IF_ERROR(error);
+		STACK_RETURN_IF_ERROR(error);
 
 		stack->capacity = new_capacity;
 	}
 
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
-		RETURN_IF_ERROR(error);
+		STACK_RETURN_IF_ERROR(error);
 	)
 
 
@@ -145,13 +146,13 @@ static error_code normalize_size(stack_t* stack) {
 		size_t new_capacity = (size_t)((float)stack->capacity * GROWTH_FACTOR);
 		LOGGER_DEBUG("Trying to realloc stack for %lu elemets", new_capacity);
 		error = stack_recalloc(stack, new_capacity); 
-		RETURN_IF_ERROR(error);
+		STACK_RETURN_IF_ERROR(error);
 		
 		LOGGER_DEBUG("Reallocation complete");
 		LOGGER_DEBUG("NEW CAPACITY = %lu", stack->capacity);
 	}
 
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
 	)
 	return error;
@@ -164,7 +165,7 @@ static error_code stack_recalloc(stack_t* stack, size_t new_capacity) {
     HARD_ASSERT(stack->data != nullptr, "Arr is nullptr");
 
     error_code error = 0;
-    ON_DEBUG(
+    ON_STACK_DEBUG(
     	error = stack_verify(stack);
     	RETURN_IF_ERROR(error);
     )
@@ -172,8 +173,8 @@ static error_code stack_recalloc(stack_t* stack, size_t new_capacity) {
 		LOGGER_WARNING("Realloc_size is null");
 	}
 
-    LOGGER_DEBUG("Trying to realloc %lu bytes", (new_capacity ON_CANARY_DEBUG(+ 2)) * sizeof(st_type));
-    st_type* new_block = (st_type*)realloc(stack->original_ptr, (new_capacity ON_CANARY_DEBUG(+ 2)) * sizeof(st_type));
+    LOGGER_DEBUG("Trying to realloc %lu bytes", (new_capacity ON_STACK_CANARY_DEBUG(+ 2)) * sizeof(st_type));
+    st_type* new_block = (st_type*)realloc(stack->original_ptr, (new_capacity ON_STACK_CANARY_DEBUG(+ 2)) * sizeof(st_type));
     if(new_block == nullptr) {
         LOGGER_ERROR("Reallocation failed");
         error |= ST_MEM_ALLOC_ERROR;
@@ -182,7 +183,7 @@ static error_code stack_recalloc(stack_t* stack, size_t new_capacity) {
     LOGGER_DEBUG("Reallocation complete");
     stack->original_ptr = new_block;
     st_type* new_data = new_block;
-    ON_CANARY_DEBUG(
+    ON_STACK_CANARY_DEBUG(
     	LOGGER_DEBUG("Canary reinitialize started");
     	new_block[0] = CANARY_NUM;
     	new_block[new_capacity + 1] = CANARY_NUM;
@@ -190,16 +191,16 @@ static error_code stack_recalloc(stack_t* stack, size_t new_capacity) {
     )
     LOGGER_DEBUG("Filling the arr");
     for(size_t i = stack->size; i < new_capacity; i++) {
-        new_data[i] = POISON_VALUE;
+        new_data[i] = POISON_STACK_VALUE;
     }
 
     stack->data = new_data;
     stack->capacity = new_capacity;
 
-    ON_HASH_DEBUG(
+    ON_STACK_HASH_DEBUG(
     	stack->ver_info.hash = stack_get_hash(stack, &error);
     )
-    ON_DEBUG(
+    ON_STACK_DEBUG(
     	error = stack_verify(stack);
     )
 
@@ -211,10 +212,10 @@ st_type stack_pop(stack_t* stack, error_code* error_return) { //Лучше во�
 
 	HARD_ASSERT(stack != nullptr, "Stack is nullptr");
 	HARD_ASSERT(error_return != nullptr, "Stack for return is nullptr");
-	ON_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
+	ON_STACK_DEBUG(HARD_ASSERT(stack->is_constructed, "Stack is not constructed");)
 
 	error_code error = 0;
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
 		if(error != 0) {
 			LOGGER_ERROR("Error code: %lu", error);
@@ -228,10 +229,10 @@ st_type stack_pop(stack_t* stack, error_code* error_return) { //Лучше во�
 		}
 	)
  	st_type popped_elem = stack->data[stack->size - 1];
-	stack->data[stack->size - 1] = POISON_VALUE;
+	stack->data[stack->size - 1] = POISON_STACK_VALUE;
 	stack->size--;
 
-	ON_HASH_DEBUG(
+	ON_STACK_HASH_DEBUG(
 		stack->ver_info.hash = stack_get_hash(stack, &error);
 	)
 
@@ -243,7 +244,7 @@ st_type stack_pop(stack_t* stack, error_code* error_return) { //Лучше во�
 		return 0;
 	}
 
-	ON_DEBUG(
+	ON_STACK_DEBUG(
 		error = stack_verify(stack);
 	)
 	return popped_elem;
@@ -269,11 +270,11 @@ error_code stack_verify(const stack_t* stack) {
 	// size_t is unsigned, so it can't be < 0 - removed check
 	if(stack->capacity  == 0)		              		      error |= ST_ZERO_CAP_ERROR;
 	if(stack->data == nullptr)       						  error |= ST_NULL_DATA_ERROR;
-	ON_CANARY_DEBUG(if(stack->data[-1] != CANARY_NUM ||
+	ON_STACK_CANARY_DEBUG(if(stack->data[-1] != CANARY_NUM ||
 	   stack->data[stack->capacity] != CANARY_NUM)    		  error |= ST_CANARY_DATA_ERROR;)
-	ON_CANARY_DEBUG(if(stack->canary_begin != CANARY_NUM ||
+	ON_STACK_CANARY_DEBUG(if(stack->canary_begin != CANARY_NUM ||
 	   stack->canary_end != CANARY_NUM) 					  error |= ST_CANARY_STRUCT_ERROR;)
-	ON_HASH_DEBUG(if(stack->ver_info.hash != stack_get_hash(stack, &error)) 
+	ON_STACK_HASH_DEBUG(if(stack->ver_info.hash != stack_get_hash(stack, &error)) 
 															  error |= ST_HASH_ERROR;)
 	return error;	
 }

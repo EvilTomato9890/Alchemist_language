@@ -3,7 +3,7 @@
 
 enum st_err {
 	ST_NO_ERROR = 0,
-	ST_NULL_ARG_ERROR 	    = 1 << 0, //TODO: 1 << 0
+	ST_NULL_ARG_ERROR 	    = 1 << 0,
 	ST_BIG_SIZE_ERROR 	    = 1 << 1,
 	ST_SMALL_SIZE_ERROR    = 1 << 2,
 	ST_NEG_SIZE_ERROR      = 1 << 3,
@@ -18,9 +18,10 @@ enum st_err {
 
 typedef long error_code;
 
-#define ST_RETURN_IF_ERROR(error_, ...) 						\
+#define STACK_RETURN_IF_ERROR(error_, ...) 						\
+	error_code err_ = (error_);							\
 	do {											 	\
-		if((error_) != 0) { 							\
+		if((err_) != 0) { 							\
 			LOGGER_ERROR("Error code: %lu", (error_));  \
 			 __VA_ARGS__\
 			return (error_); 							\

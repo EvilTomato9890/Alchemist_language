@@ -1,5 +1,5 @@
 
-PROJECT  ?= mylib
+PROJECT  ?= stack
 
 SRC_DIR  := source
 INC_DIR  := include
@@ -19,7 +19,7 @@ ARFLAGS  ?= rcs
 CFG ?= debug
 
 STD   ?= -std=c++17
-INCS  := -I$(INC_DIR) -I$(INT_DIR) -Ilibs
+INCS  := -I$(INC_DIR) -I$(INT_DIR)
 
 
 SAN_FLAGS := -fsanitize=address,undefined,leak -fno-omit-frame-pointer

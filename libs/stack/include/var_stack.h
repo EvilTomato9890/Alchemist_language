@@ -7,7 +7,7 @@
 
 #include "debug_meta.h"
 #include "error_handler.h"
-#include "node_info.h"
+#include "/home/omglo/alchemist_language/libs/AST/include/node_info.h"
 
 typedef variable_t st_type;
 
