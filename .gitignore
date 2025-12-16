@@ -1,5 +1,6 @@
 *.o
 *.d
 *.a
-*./tests/*.
-*./build/*.
+
+/build/*
+/tests/*
