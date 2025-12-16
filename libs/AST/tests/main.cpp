@@ -19,7 +19,7 @@ static int g_failed = 0;
 #define CHECK_TRUE(cond) do { \
     if (!(cond)) { \
         ++g_failed; \
-        std::fprintf(stderr, "[FAIL] %s:%d: CHECK_TRUE(%s)\n", __FILE__, __LINE__, #cond); \
+        fprintf(stderr, "[FAIL] %s:%d: CHECK_TRUE(%s)\n", __FILE__, __LINE__, #cond); \
     } \
 } while (0)
 
@@ -28,7 +28,7 @@ static int g_failed = 0;
     unsigned long long _vb = (unsigned long long)(b); \
     if (_va != _vb) { \
         ++g_failed; \
-        std::fprintf(stderr, "[FAIL] %s:%d: CHECK_EQ_U64(%s, %s) got %llu vs %llu\n", \
+        fprintf(stderr, "[FAIL] %s:%d: CHECK_EQ_U64(%s, %s) got %llu vs %llu\n", \
                      __FILE__, __LINE__, #a, #b, _va, _vb); \
     } \
 } while (0)
@@ -38,7 +38,7 @@ static int g_failed = 0;
     int _vb = (int)(b); \
     if (_va != _vb) { \
         ++g_failed; \
-        std::fprintf(stderr, "[FAIL] %s:%d: CHECK_EQ_INT(%s, %s) got %d vs %d\n", \
+        fprintf(stderr, "[FAIL] %s:%d: CHECK_EQ_INT(%s, %s) got %d vs %d\n", \
                      __FILE__, __LINE__, #a, #b, _va, _vb); \
     } \
 } while (0)
@@ -48,7 +48,7 @@ static int g_failed = 0;
     const void* _pb = (const void*)(b); \
     if (_pa == _pb) { \
         ++g_failed; \
-        std::fprintf(stderr, "[FAIL] %s:%d: CHECK_NE_PTR(%s, %s) both=%p\n", __FILE__, __LINE__, #a, #b, _pa); \
+        fprintf(stderr, "[FAIL] %s:%d: CHECK_NE_PTR(%s, %s) both=%p\n", __FILE__, __LINE__, #a, #b, _pa); \
     } \
 } while (0)
 
@@ -56,9 +56,9 @@ static int g_failed = 0;
     double _da = (double)(a); \
     double _db = (double)(b); \
     double _de = (double)(eps); \
-    if (std::fabs(_da - _db) > _de) { \
+    if (fabs(_da - _db) > _de) { \
         ++g_failed; \
-        std::fprintf(stderr, "[FAIL] %s:%d: CHECK_DBL_NEAR(%s,%s,%.3g) got %.17g vs %.17g\n", \
+        fprintf(stderr, "[FAIL] %s:%d: CHECK_DBL_NEAR(%s,%s,%.3g) got %.17g vs %.17g\n", \
                      __FILE__, __LINE__, #a, #b, _de, _da, _db); \
     } \
 } while (0)
@@ -71,7 +71,7 @@ static tree_t make_empty_tree() {
 
     // ВАЖНО: tree_destroy() делает var_stack_destroy() и free(tree->var_stack),
     // поэтому стек выделяем на куче.
-    var_stack_t* vs = (var_stack_t*)std::calloc(1, sizeof(var_stack_t));
+    var_stack_t* vs = (var_stack_t*)calloc(1, sizeof(var_stack_t));
     CHECK_TRUE(vs != nullptr);
     var_stack_init(vs, 10, STACK_VER_INIT);
     error_code err = tree_init(&tree, vs ON_TREE_DEBUG(, TREE_VER_INIT));
@@ -131,7 +131,7 @@ static bool nodes_equal_by_var_name(const tree_t* ta, const tree_node_t* a,
             c_string_t na = get_var_name(ta, a);
             c_string_t nb = get_var_name(tb, b);
             if (na.len != nb.len) return false;
-            if (na.len != 0 && std::memcmp(na.ptr, nb.ptr, na.len) != 0) return false;
+            if (na.len != 0 && memcmp(na.ptr, nb.ptr, na.len) != 0) return false;
             break;
         }
         default:
@@ -223,7 +223,7 @@ TEST_CASE(test_parse_empty_and_nil) {
     // Пустой буфер => пустое дерево
     {
         const char* s = "   \n\t  ";
-        t.buff = {(char*)s, (unsigned long)std::strlen(s)};
+        t.buff = {(char*)s, (unsigned long)strlen(s)};
         error_code err = tree_parse_from_buffer(&t);
         CHECK_EQ_INT(err, ERROR_NO);
         CHECK_TRUE(t.root == nullptr);
@@ -233,7 +233,7 @@ TEST_CASE(test_parse_empty_and_nil) {
     // "nil" => пустое дерево
     {
         const char* s = "nil";
-        t.buff = {(char*)s, (unsigned long)std::strlen(s)};
+        t.buff = {(char*)s, (unsigned long)strlen(s)};
         error_code err = tree_parse_from_buffer(&t);
         CHECK_EQ_INT(err, ERROR_NO);
         CHECK_TRUE(t.root == nullptr);
@@ -248,7 +248,7 @@ TEST_CASE(test_parse_invalid) {
 
     // missing closing ')'
     const char* s = "( 1 nil nil";
-    t.buff = {(char*)s, (unsigned long)std::strlen(s)};
+    t.buff = {(char*)s, (unsigned long)strlen(s)};
 
     error_code err = tree_parse_from_buffer(&t);
     CHECK_TRUE(err != ERROR_NO);
@@ -260,11 +260,11 @@ TEST_CASE(test_parse_invalid) {
 }
 
 static void write_text_file(const char* filename, const char* text) {
-    std::FILE* f = std::fopen(filename, "wb");
+    FILE* f = fopen(filename, "wb");
     CHECK_TRUE(f != nullptr);
     if (!f) return;
-    std::fwrite(text, 1, std::strlen(text), f);
-    std::fclose(f);
+    fwrite(text, 1, strlen(text), f);
+    fclose(f);
 }
 
 TEST_CASE(test_write_read_roundtrip_function) {
@@ -305,7 +305,7 @@ TEST_CASE(test_write_read_roundtrip_function) {
         destroy_tree(&t);
     }
 
-    std::remove(fname);
+    remove(fname);
 }
 
 TEST_CASE(test_read_write_with_variable) {
@@ -353,7 +353,7 @@ TEST_CASE(test_read_write_with_variable) {
         destroy_tree(&t);
     }
 
-    std::remove(fname);
+    remove(fname);
 }
 
 //------------------------------------------------------------------------------
@@ -372,10 +372,10 @@ int main() {
     test_read_write_with_variable();
 
     if (g_failed == 0) {
-        std::printf("OK\n");
+        printf("OK\n");
         return 0;
     }
 
-    std::fprintf(stderr, "FAILED: %d\n", g_failed);
+    fprintf(stderr, "FAILED: %d\n", g_failed);
     return 1;
 }
