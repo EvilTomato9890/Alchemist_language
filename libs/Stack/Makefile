@@ -1,5 +1,5 @@
 
-PROJECT   ?= stack
+PROJECT   ?= Stack
 
 SRC_DIR   := source
 INC_DIR   := include

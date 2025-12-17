@@ -1,5 +1,5 @@
 
-PROJECT   ?= Unordered_map
+PROJECT   ?= Vector
 
 SRC_DIR   := source
 INC_DIR   := include

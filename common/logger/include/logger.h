@@ -6,10 +6,10 @@
 //==============================================================================
 
 enum logger_mode_type {
-    LOGGER_MODE_DEBUG = 0,
-    LOGGER_MODE_INFO  = 1,
+    LOGGER_MODE_DEBUG   = 0,
+    LOGGER_MODE_INFO    = 1,
     LOGGER_MODE_WARNING = 2,
-    LOGGER_MODE_ERROR = 3
+    LOGGER_MODE_ERROR   = 3
 };
 
 enum logger_output_type {

@@ -10,6 +10,7 @@
 //! @brief Строка, придающая выводу голубой цвет.
 #define CYAN_CONSOLE "\033[36m"
 
+#define ORANGE_CONSOLE "\033[38;5;208m"
 //! @brief Строка, придающая выводу желтый цвет.   
 #define YELLOW_CONSOLE "\033[33m"
 

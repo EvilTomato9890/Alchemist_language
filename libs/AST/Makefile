@@ -1,5 +1,5 @@
 
-PROJECT   ?= tree
+PROJECT   ?= AST
     
 SRC_DIR   := source
 INC_DIR   := include
@@ -85,7 +85,7 @@ EXT_LIB_TARGET_3 ?= lib
 EXT_LIB_A_3      ?= $(EXT_LIB_DIR_3)/build/lib/libcommon.a
 
 # ================================================================================
-.PHONY: all test lib clean help
+.PHONY: all test lib clean test_clean help
 
 all: test
 
@@ -94,6 +94,7 @@ help:
 	@echo "Targets:"
 	@echo "  make lib         - build static library   ($(LIB_PATH))"
 	@echo "  make clean"
+	@echo "  make test_clean  - clear after test"
 	@echo "  CFG=debug|release "
 
 test: $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(TST_EXE)
@@ -134,8 +135,11 @@ $(OBJ_DIR)/%.o: %.c
 
 -include $(DEPS)
 
-clean:
+test_clean:
 	rm -rf $(BUILD_DIR)
 	@$(MAKE) -C $(EXT_LIB_DIR_1) clean || true
 	@$(MAKE) -C $(EXT_LIB_DIR_2) clean || true
 	@$(MAKE) -C $(EXT_LIB_DIR_3) clean || true
+
+clean:
+	rm -rf $(BUILD_DIR)
