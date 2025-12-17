@@ -59,7 +59,9 @@ int main() {
         "function   decl foo(x, 10); //SOME SHIT\n"
         "$1.3){ /* TEST */ 123a <= .5 and or }\n"
         "aaaa  bbbb @@@@@@@@@@@@@\n"
-        "AAB */ bbbb\n";
+        "AAB */ bbbb\n"
+        "call foo;\n"
+        "return 42;\n";
 
     c_string_t buffer = { text, 0 };
     while (text[buffer.len] != '\0') buffer.len++;
@@ -75,7 +77,7 @@ int main() {
     vector_t diags  = {};
 
     if (SIMPLE_VECTOR_INIT(&tokens, 64, lexer_token_t) != 0) return 1;
-    if (SIMPLE_VECTOR_INIT(&diags,  32, lexer_diag_t)  != 0) return 1;
+    if (SIMPLE_VECTOR_INIT(&diags,  32, diag_log_t)  != 0) return 1;
 
     lexer_error_t lex_err =
         lexer_tokenize(buffer, &config, &tokens, &diags);
@@ -91,7 +93,7 @@ int main() {
 
     if (vector_size(&diags) != 0) {
         printf("\nDiagnostics:\n");
-        print_diags(stderr, buffer, LEXER_ERROR, config.filename, &diags);
+        print_diags(stderr, buffer, config.filename, &diags);
     }
 
     vector_destroy(&diags);

@@ -1,5 +1,5 @@
-#ifndef TOKENIZER_H_INCLUDED
-#define TOKENIZER_H_INCLUDED
+#ifndef PROJECT_FRONTEND_LEXER_INCLUDE_LEXER_TOKENIZER_H_NCLUDED
+#define PROJECT_FRONTEND_LEXER_INCLUDE_LEXER_TOKENIZER_H_NCLUDED
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -17,12 +17,6 @@ enum lexer_token_kind_t {
     LEX_TK_LPAREN  = 3,
     LEX_TK_RPAREN  = 4,
     LEX_TK_KEYWORD = 5,
-};
-
-enum lexer_diag_code_t {
-    LEX_DIAG_UNKNOWN_SYMBOL = 1,
-    LEX_DIAG_BAD_NUMBER     = 2,
-    LEX_DIAG_UNTERMINATED_COMMENT = 3,
 };
 
 enum lexer_error_t {
@@ -57,17 +51,6 @@ struct lexer_token_t {
     opcode_t   opcode;
 };
 
-struct lexer_diag_t {
-    lexer_diag_code_t code;
-
-    size_t position;
-    size_t length;
-
-    size_t line;
-    size_t column;
-
-    unsigned char got;
-};
 
 //================================================================================
 
@@ -75,4 +58,4 @@ lexer_error_t lexer_tokenize(c_string_t buffer, const lexer_config_t* config,
                              vector_t* tokens_out, vector_t* diags_out);
 
 //================================================================================
-#endif // TOKENIZER_H_INCLUDED
+#endif /* PROJECT_FRONTEND_LEXER_INCLUDE_LEXER_TOKENIZER_H_NCLUDED */

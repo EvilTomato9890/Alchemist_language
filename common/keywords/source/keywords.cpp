@@ -9,6 +9,8 @@ const keyword_def_t KEYWORDS[] = {
     {OP_GE,        ">=",            "GE"},
     {OP_LT,        "<",             "LT"},
     {OP_GT,        ">",             "GT"},
+    {OP_AND,       "&&",            "AND"},
+    {OP_OR,        "||",            "OR"},
                  
     {OP_PLUS,      "+",             "ADD"},
     {OP_MINUS,     "-",             "SUB"},
@@ -17,12 +19,28 @@ const keyword_def_t KEYWORDS[] = {
                                              
     {OP_ASSIGN,    "=",             "ASSIGN"},
                                      
-    {OP_LBRACE,    "{",             "LBRACE"},
-    {OP_RBRACE,    "}",             "RBRACE"},
-    {OP_SEMI,      ";",             "SEMI"},
-    {OP_COMMA,     ",",             "COMMA"},
+    {OP_VIS_START, "{",             "VIS_START"},
+    {OP_VIS_END,   "}",             "VIS_END"},
+    {OP_LCAT,      ";",             "LCAT"},
+    {OP_ENUM_SEP,  ",",             "ENUM_SEP"},
                
-    {OP_FUNC_DECL, "function decl", "FUNC_DECL"},
+    {OP_IF,         "if",           "IF"},
+    {OP_ELSE,       "else",         "ELSE"},
+
+    {OP_WHILE,      "while",        "WHILE"},
+    {OP_BREAK,      "break",        "BREAK"},
+    {OP_CONTINUE,   "continue",     "CONTINUE"},
+
+    {OP_FINISH,     "finish",       "FINISH"},
+    {OP_RETURN,     "return",       "RETURN"},
+
+    {OP_FUNC_DECL,  "func decl",    "FUNC_DECL"},
+    {OP_PROC_DECL,  "proc decl",    "PROC_DECL"},
+    {OP_CALL,       "call",         "CALL"},
+
+    {OP_PRINT,      "print",        "PRINT"},
+    {OP_INPUT,      "input",        "INPUT"},
+    
 };
 
 const size_t KEYWORDS_COUNT =

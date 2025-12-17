@@ -7,27 +7,44 @@
 
 enum opcode_t {
     OP_NONE = 0,
-                                                                                                                           
-    OP_PLUS,
-    OP_MINUS,
-    OP_MUL,
-    OP_DIV,
-                                                                               
-    OP_EQ,
-    OP_NEQ,
-    OP_LE,
-    OP_GE,
-    OP_LT,
-    OP_GT,      
-                                                                                           
-    OP_ASSIGN,
-                                                                                                                       
-    OP_LBRACE,
-    OP_RBRACE,
-    OP_SEMI,
-    OP_COMMA,
-                                                                                                     
-    OP_FUNC_DECL,
+
+    OP_EQ,                                      
+    OP_NEQ,                             
+    OP_LE,                             
+    OP_GE,                             
+    OP_LT,                             
+    OP_GT,                              
+    OP_AND, 
+    OP_OR,
+
+    OP_PLUS,                                                        
+    OP_MINUS,                           
+    OP_MUL,                             
+    OP_DIV,  
+
+    OP_ASSIGN,  
+
+    OP_VIS_START,                             
+    OP_VIS_END,                
+    OP_LCAT,                             
+    OP_ENUM_SEP,    
+
+    OP_IF,                             
+    OP_ELSE,    
+
+    OP_WHILE,                             
+    OP_BREAK,                             
+    OP_CONTINUE,     
+                           
+    OP_FINISH,                             
+    OP_RETURN,                             
+    OP_FUNC_DECL, 
+    OP_PROC_DECL, 
+
+    OP_CALL,           
+    
+    OP_PRINT,                             
+    OP_INPUT,
 };
 
 //================================================================================

@@ -2,6 +2,7 @@
 
 #include "common/asserts/include/asserts.h"
 #include "common/logger/include/logger.h"
+#include "error_logger/include/frontend_err_logger.h"
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -40,7 +41,7 @@ static bool is_ident_start(unsigned char ch) {
 //================================================================================
 
 static lexer_error_t lexer_push_diag(lexer_state_t* state,
-                                     const lexer_diag_t* diag);
+                                     const diag_log_t* diag);
                                      
 //================================================================================
 
@@ -107,12 +108,10 @@ static lexer_error_t skip_block_comment(lexer_state_t* state) {
         lexer_advance(state, 1);
     }
 
-    lexer_diag_t diag = {};
-    diag.code = LEX_DIAG_UNTERMINATED_COMMENT;
-    diag.position = start_pos;
-    diag.length = 2;
-    diag.line = start_line;
-    diag.column = start_col;
+    diag_log_t diag = diag_log_init(LEXER_ERROR, DIAG_LEX_UNTERMINATED_COMMENT,
+                                    start_pos, 2,
+                                    start_line, start_col,
+                                    "unterminated block comment");
 
     lexer_error_t err = lexer_push_diag(state, &diag);
     if (err != LEX_ERR_OK) return err;
@@ -152,7 +151,7 @@ static lexer_error_t lexer_push_token(lexer_state_t* state,
 }
 
 static lexer_error_t lexer_push_diag(lexer_state_t* state,
-                                     const lexer_diag_t* diag) {
+                                     const diag_log_t* diag) {
     HARD_ASSERT(state != nullptr, "state is nullptr");
     HARD_ASSERT(diag != nullptr, "diag is nullptr");
 
@@ -364,6 +363,8 @@ static size_t scan_ident_len(c_string_t buffer, size_t position) {
 //================================================================================
 
 static lexer_error_t lex_emit_eof(lexer_state_t* state) {
+    HARD_ASSERT(state != nullptr, "state is nullptr");
+
     lexer_token_t token = {};
 
     token.kind = LEX_TK_EOF;
@@ -376,14 +377,13 @@ static lexer_error_t lex_emit_eof(lexer_state_t* state) {
 }
 
 static lexer_error_t lex_unknown_symbol(lexer_state_t* state, unsigned char got) {
-    lexer_diag_t diag = {};
+    HARD_ASSERT(state != nullptr, "state is nullptr");
 
-    diag.code     = LEX_DIAG_UNKNOWN_SYMBOL;
-    diag.position = state->position;
-    diag.length   = 1;
-    diag.line     = state->line;
-    diag.column   = state->column;
-    diag.got      = got;
+    diag_log_t diag = diag_log_init(LEXER_ERROR, DIAG_LEX_UNKNOWN_SYMBOL,
+                                    state->position, 1,
+                                    state->line, state->column,
+                                    isprint(got) ? "unknown symbol '%c'" : "unknown symbol (0x%02X)",
+                                    isprint(got) ? (char)got : (unsigned)got);
 
     lexer_error_t err = lexer_push_diag(state, &diag);
     if (err != LEX_ERR_OK) return err;
@@ -393,13 +393,12 @@ static lexer_error_t lex_unknown_symbol(lexer_state_t* state, unsigned char got)
 }
 
 static lexer_error_t lex_bad_number(lexer_state_t* state, size_t length) {
-    lexer_diag_t diag = {};
+    HARD_ASSERT(state != nullptr, "state is nullptr");
 
-    diag.code     = LEX_DIAG_BAD_NUMBER;
-    diag.position = state->position;
-    diag.length   = (length > 0) ? length : 1;
-    diag.line     = state->line;
-    diag.column   = state->column;
+    diag_log_t diag = diag_log_init(LEXER_ERROR, DIAG_LEX_BAD_NUMBER,
+                                    state->position, (length > 0) ? length : 1,
+                                    state->line, state->column,
+                                    "bad number literal");
 
     lexer_error_t err = lexer_push_diag(state, &diag);
     if (err != LEX_ERR_OK) return err;
@@ -407,6 +406,7 @@ static lexer_error_t lex_bad_number(lexer_state_t* state, size_t length) {
     lexer_advance(state, diag.length);
     return LEX_ERR_OK;
 }
+
 
 static lexer_error_t lex_try_ignore_word(lexer_state_t* state, bool* ignored_out) {
     HARD_ASSERT(ignored_out != nullptr, "ignored_out is nullptr");

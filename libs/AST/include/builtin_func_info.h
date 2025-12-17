@@ -32,7 +32,7 @@ enum func_code_t {
 };
 
 struct builtin_func_t {
-    func_code_t    code;
+    func_code_t  code;
     const char*  name;
 };
 

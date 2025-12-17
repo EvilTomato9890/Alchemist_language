@@ -5,6 +5,7 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdarg.h>
 
 //================================================================================
 
@@ -30,29 +31,6 @@ static void find_line_bounds(c_string_t buffer, size_t position,
     *end_out = end;
 }
 
-static void print_diag_message(FILE* stream, const lexer_diag_t* diag) {
-    switch (diag->code) {
-        case LEX_DIAG_UNKNOWN_SYMBOL:
-            if (isprint(diag->got))
-                fprintf(stream, "unknown symbol '%c'", (char)diag->got);
-            else
-                fprintf(stream, "unknown symbol (0x%02X)", (unsigned)diag->got);
-            break;
-
-        case LEX_DIAG_BAD_NUMBER:
-            fprintf(stream, "bad number literal");
-            break;
-
-        case LEX_DIAG_UNTERMINATED_COMMENT:
-            fprintf(stream, "unterminated block comment");
-            break;
-            
-        default:
-            fprintf(stream, "lexer error");
-            break;
-    }
-}
-
 static void print_caret_line(FILE* stream, c_string_t line,
                              size_t column_1based, size_t length) {
     if (column_1based == 0) column_1based = 1;
@@ -75,7 +53,7 @@ static void print_caret_line(FILE* stream, c_string_t line,
 
 //================================================================================
 
-void print_diags(FILE* stream, c_string_t buffer, error_source_t source,
+void print_diags(FILE* stream, c_string_t buffer,
                  const char* filename, const vector_t* diags) {
 
     if (stream == nullptr) stream = stderr;
@@ -83,13 +61,13 @@ void print_diags(FILE* stream, c_string_t buffer, error_source_t source,
 
     size_t diag_count = vector_size(diags);
     for (size_t i = 0; i < diag_count; ++i) {
-        const lexer_diag_t* diag = (const lexer_diag_t*)vector_get_const(diags, i);
+        const diag_log_t* diag = (const diag_log_t*)vector_get_const(diags, i);
         if (diag == nullptr) continue;
 
-        if (source == LEXER_ERROR) {
+        if (diag->source == LEXER_ERROR) {
             fprintf(stream, "%s:%zu:%zu:" ORANGE_CONSOLE " lexer_error: " RESET_CONSOLE,
                     filename != nullptr ? filename : "<missed file>", diag->line, diag->column);
-        } else if (source == PARSER_ERROR) {
+        } else if (diag->source == PARSER_ERROR) {
             fprintf(stream, "%s:%zu:%zu:" RED_CONSOLE " error: " RESET_CONSOLE,
                     filename != nullptr ? filename : "<missed file>", diag->line, diag->column);
         } else {
@@ -97,7 +75,7 @@ void print_diags(FILE* stream, c_string_t buffer, error_source_t source,
             fprintf(stream, "%s:%zu:%zu:" RED_CONSOLE " unkown source error: " RESET_CONSOLE,
                     filename != nullptr ? filename : "<missed file>", diag->line, diag->column);
         }
-        print_diag_message(stream, diag);
+        fprintf(stream, diag->message);
         fputc('\n', stream);
 
         size_t line_start = 0;
@@ -110,4 +88,25 @@ void print_diags(FILE* stream, c_string_t buffer, error_source_t source,
         fputc('\n', stream);
         print_caret_line(stream, line, diag->column, diag->length);
     }
+}
+
+diag_log_t diag_log_init(error_source_t source, diag_code_t code,
+                         size_t position, size_t length,
+                         size_t line,     size_t column,
+                         const char* message, ...) {
+    diag_log_t diag = {};
+
+    diag.source   = source;
+    diag.code     = code;
+    diag.position = position;
+    diag.length   = length;
+    diag.line     = line;
+    diag.column   = column;
+
+    va_list args = {};
+    va_start(args, message);
+    vsnprintf(diag.message, MAX_ERROR_MESSAGE_LENGTH, message != nullptr ? message : "", args);
+    va_end(args);
+
+    return diag;
 }
