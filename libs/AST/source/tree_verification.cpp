@@ -1,5 +1,5 @@
 #include "tree_verification.h"
-#include "logger.h"
+#include "common/logger/include/logger.h"
 #include "asserts.h"
 #include "tree_operations.h"
 #include "tree_file_io.h"

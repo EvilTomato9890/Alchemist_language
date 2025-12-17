@@ -6,7 +6,7 @@
 #include <errno.h>
 
 #include "asserts.h"
-#include "logger.h"
+#include "common/logger/include/logger.h"
 #include "tree_operations.h"
 #include "tree_verification.h"
 #include "error_handler.h"
@@ -15,21 +15,19 @@
 #include "libs/Stack/include/stack.h"
 #include "libs/My_string/include/my_string.h"
 #include "common/file_operations/include/file_operations.h"
-#include "builtin_func_info.h"
+#include "common/keywords/include/keywords.h"
 
 //================================================================================
 
-static func_code_t get_op_code(c_string_t func_str, error_code* error) {
+static op_code_t get_op_code(c_string_t func_str, error_code* error) {
     HARD_ASSERT(func_str.ptr != nullptr, "func_name nullptr");
-    LOGGER_DEBUG("A: %d", builtin_func_table_size);
-    for(size_t i = 0; i < builtin_func_table_size; i++) {
-        LOGGER_DEBUG("AA: %d и %s", builtin_func_table[i].code, builtin_func_table[i].code);
-        if(my_scstrcmp(func_str, builtin_func_table[i].name) == 0) return builtin_func_table[i].code;
+    for(size_t i = 0; i < KEYWORDS_COUNT; i++) {
+        if(my_scstrcmp(func_str, KEYWORDS[i].tree_name) == 0) return KEYWORDS[i].op_code;
     }
 
     LOGGER_ERROR("Func doesn`t found");
     *error |= ERROR_UNKNOWN_FUNC;
-    return ADD;
+    return OP_PLUS;
 }
 
 static const char* skip_whitespace(const char* buff) {
@@ -351,10 +349,10 @@ error_code tree_read_from_file(tree_t* tree, const char* filename, string_t* buf
     return ERROR_NO;
 }
 
-const char* get_func_name_by_type(func_code_t func_type_value) {
-    for (size_t index_value = 0; index_value < (size_t)builtin_func_table; ++index_value) {
-        if (builtin_func_table[index_value].code == func_type_value) {
-            return builtin_func_table[index_value].name;
+const char* get_func_name_by_type(op_code_t func_type_value) {
+    for (size_t index_value = 0; index_value < (size_t)KEYWORDS; ++index_value) {
+        if (KEYWORDS[index_value].op_code == func_type_value) {
+            return KEYWORDS[index_value].tree_name;
         }
     }
 

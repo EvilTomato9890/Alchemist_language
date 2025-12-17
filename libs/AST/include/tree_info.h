@@ -19,7 +19,7 @@ struct tex_squash_binding_t {
 struct tree_t {
     tree_node_t*   root;
     size_t         size;
-    ident_stack_t*   ident_stack;
+    ident_stack_t* ident_stack;
     c_string_t     buff;
     ON_TREE_DEBUG(
         tree_ver_info_t ver_info;

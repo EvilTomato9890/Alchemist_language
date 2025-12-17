@@ -6,6 +6,7 @@
 #include "libs/AST/internal/asserts.h"
 #include "libs/Stack/include/ident_stack.h"
 #include "libs/AST/internal/debug_meta.h"
+#include "common/keywords/include/keywords.h"
 
 error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info));
 
@@ -32,7 +33,7 @@ error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out);
 
 value_t make_union_const(const_val_type constant);
 value_t make_union_var(size_t var_idx);
-value_t make_union_func(func_code_t func);
+value_t make_union_func(op_code_t func);
 value_t make_union_universal(node_type_t type, ...);
 
 ssize_t      get_ident_idx       (c_string_t ident, const ident_stack_t* ident_stack);

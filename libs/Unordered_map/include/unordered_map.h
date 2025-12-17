@@ -90,7 +90,7 @@ bool   u_map_is_empty(const u_map_t* u_map);
 bool       u_map_get_elem   (const u_map_t* u_map, const void* key, void* value_out);
 hm_error_t u_map_insert_elem(u_map_t*       u_map, const void* key, const void* value);
 hm_error_t u_map_remove_elem(u_map_t*       u_map, const void* key, void* value_out);
-
+bool u_map_get_key_by_value(const u_map_t* u_map, const void* value, size_t* key_idx_out);
 
 //================================================================================
 //                              Продвинутые функции

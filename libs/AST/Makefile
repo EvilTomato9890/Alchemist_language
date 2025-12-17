@@ -74,11 +74,11 @@ DEPS     := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
 
 EXT_LIB_DIR_1    ?= ../Stack
 EXT_LIB_TARGET_1 ?= lib
-EXT_LIB_A_1      ?= $(EXT_LIB_DIR_1)/build/lib/libstack.a  
+EXT_LIB_A_1      ?= $(EXT_LIB_DIR_1)/build/lib/libStack.a  
 
 EXT_LIB_DIR_2    ?= ../My_string
 EXT_LIB_TARGET_2 ?= lib
-EXT_LIB_A_2      ?= $(EXT_LIB_DIR_2)/build/lib/libmy_string.a
+EXT_LIB_A_2      ?= $(EXT_LIB_DIR_2)/build/lib/libMy_string.a
 
 EXT_LIB_DIR_3    ?= ../../common
 EXT_LIB_TARGET_3 ?= lib

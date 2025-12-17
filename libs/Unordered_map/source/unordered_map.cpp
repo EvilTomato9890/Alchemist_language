@@ -506,6 +506,22 @@ bool u_map_get_elem(const u_map_t* u_map, const void* key, void* value_out) {
     return true;
 }
 
+bool u_map_get_key_by_value(const u_map_t* u_map, const void* value, size_t* key_idx_out) {
+    HARD_ASSERT(u_map      != nullptr, "u_map is nullptr");
+    HARD_ASSERT(value      != nullptr, "value is nullptr");
+    HARD_ASSERT(key_idx_out!= nullptr, "key_idx_out is nullptr");
+
+    for (size_t i = 0; i < u_map->capacity; ++i) {
+        if (u_map->data_states[i] != USED) continue;
+
+        if (memcmp(get_value(u_map, i), value, u_map->value_size) == 0) {
+            *key_idx_out = i;
+            return true;
+        }
+    }
+
+    return false;
+}
 hm_error_t u_map_insert_elem(u_map_t* u_map, const void* key, const void* value) {
     HARD_ASSERT(u_map  != nullptr, "u_map is nullptr");
     HARD_ASSERT(key    != nullptr, "key is nullptr");

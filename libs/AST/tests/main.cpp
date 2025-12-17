@@ -89,7 +89,7 @@ static tree_node_t* mk_const(double x) {
     return init_node(CONSTANT, make_union_const(x), nullptr, nullptr);
 }
 
-static tree_node_t* mk_func(func_code_t f, tree_node_t* l, tree_node_t* r) {
+static tree_node_t* mk_func(op_code_t f, tree_node_t* l, tree_node_t* r) {
     return init_node(FUNCTION, make_union_func(f), l, r);
 }
 
@@ -193,8 +193,8 @@ TEST_CASE(test_replace_value) {
 TEST_CASE(test_subtree_deep_copy) {
     tree_t t = make_empty_tree();
 
-    // (ADD 7 9)
-    tree_node_t* root = mk_func(ADD, mk_const(7.0), mk_const(9.0));
+    // (OP_PLUS 7 9)
+    tree_node_t* root = mk_func(OP_PLUS, mk_const(7.0), mk_const(9.0));
     CHECK_TRUE(root != nullptr);
 
     (void)tree_change_root(&t, root);
@@ -274,8 +274,8 @@ TEST_CASE(test_write_read_roundtrip_function) {
     {
         tree_t t = make_empty_tree();
 
-        // (ADD 10 20)
-        tree_node_t* root = mk_func(ADD, mk_const(10.0), mk_const(20.0));
+        // (OP_PLUS 10 20)
+        tree_node_t* root = mk_func(OP_PLUS, mk_const(10.0), mk_const(20.0));
         (void)tree_change_root(&t, root);
 
         error_code err = tree_write_to_file(&t, fname);
@@ -293,7 +293,7 @@ TEST_CASE(test_write_read_roundtrip_function) {
 
         CHECK_TRUE(t.root != nullptr);
         CHECK_EQ_INT(t.root->type, FUNCTION);
-        CHECK_EQ_INT((int)t.root->value.func, (int)ADD);
+        CHECK_EQ_INT((int)t.root->value.func, (int)OP_PLUS);
 
         CHECK_TRUE(t.root->left && t.root->right);
         CHECK_EQ_INT(t.root->left->type, CONSTANT);
@@ -322,7 +322,7 @@ TEST_CASE(test_read_write_with_variable) {
 
         tree_node_t* xnode = init_node(VARIABLE, make_union_var(idx), nullptr, nullptr);
         tree_node_t* cnode = mk_const(5.0);
-        tree_node_t* root  = mk_func(ADD, xnode, cnode);
+        tree_node_t* root  = mk_func(OP_PLUS, xnode, cnode);
 
         (void)tree_change_root(&t, root);
 

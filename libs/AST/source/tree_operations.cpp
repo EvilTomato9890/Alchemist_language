@@ -7,7 +7,7 @@
 
 #include "debug_meta.h"
 #include "asserts.h"
-#include "logger.h"
+#include "common/logger/include/logger.h"
 #include "tree_operations.h"
 #include "tree_verification.h"
 #include "tree_info.h"
@@ -27,7 +27,7 @@ value_t make_union_var(size_t var_idx) {
     return val;
 }
 
-value_t make_union_func(func_code_t func) {
+value_t make_union_func(op_code_t func) {
     value_t val = {.func = func};
     return val;
 }
@@ -51,7 +51,7 @@ value_t make_union_universal(node_type_t type, ...) {
         }
         case FUNCTION: {
             int func = va_arg(ap, int);
-            val.func = (func_code_t)func;
+            val.func = (op_code_t)func;
             break;
         }
         default:

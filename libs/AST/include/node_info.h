@@ -2,8 +2,7 @@
 #define LIBS_AST_INCLUDE_NODE_INFO_H_NCLUDED
 
 #include "libs/My_string/include/my_string.h"
-#include "libs/AST/include/builtin_func_info.h"
-
+#include "common/keywords/include/keywords.h"
 
 typedef double const_val_type;
 
@@ -16,7 +15,7 @@ enum node_type_t {
 union value_t {
     const_val_type constant;
     size_t         var_idx;
-    func_code_t func;
+    op_code_t      func;
 };
 
 struct tree_node_t {

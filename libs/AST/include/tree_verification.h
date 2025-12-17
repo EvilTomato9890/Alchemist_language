@@ -1,5 +1,5 @@
-#ifndef TREE_VERIFICATION_H_INCLUDED
-#define TREE_VERIFICATION_H_INCLUDED
+#ifndef LIBS_AST_INCLUDE_TREE_VERIFICATION_H_NCLUDED
+#define LIBS_AST_INCLUDE_TREE_VERIFICATION_H_NCLUDED
 
 #include <stdarg.h>
 
@@ -22,5 +22,5 @@ error_code tree_dump(const tree_t* tree,
                      bool is_visual,
                      const char* fmt, ...);
 
-#endif
+#endif /* LIBS_AST_INCLUDE_TREE_VERIFICATION_H_NCLUDED */
 
