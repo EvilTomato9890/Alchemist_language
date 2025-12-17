@@ -80,6 +80,8 @@ static bool check_2_chars(c_string_t buffer, size_t position,
 }
 
 static void skip_line_comment(lexer_state_t* state) {
+    HARD_ASSERT(state != nullptr, "state is nullptr");
+
     lexer_advance(state, 2);
 
     while (state->position < state->buffer.len) {
@@ -89,6 +91,8 @@ static void skip_line_comment(lexer_state_t* state) {
 }
 
 static lexer_error_t skip_block_comment(lexer_state_t* state) {
+    HARD_ASSERT(state != nullptr, "state is nullptr");
+
     size_t start_pos = state->position;
     size_t start_line = state->line;
     size_t start_col = state->column;
@@ -118,7 +122,7 @@ static lexer_error_t skip_block_comment(lexer_state_t* state) {
 }
 
 static lexer_error_t lexer_skip_trivia(lexer_state_t* state) {
-    for (;;) {
+    while (true) {
         size_t before = state->position;
 
         lexer_skip_spaces(state);
@@ -547,9 +551,9 @@ static lexer_error_t lex_try_ident(lexer_state_t* state, bool* matched_out) {
 
 lexer_error_t lexer_tokenize(c_string_t buffer, const lexer_config_t* config,
                              vector_t* tokens_out, vector_t* diags_out) {
-    if (config == nullptr) return LEX_ERR_BAD_ARG;
-    if (tokens_out == nullptr) return LEX_ERR_BAD_ARG;
-    if (diags_out == nullptr) return LEX_ERR_BAD_ARG;
+    HARD_ASSERT(config != nullptr, "config is nullptr");
+    HARD_ASSERT(tokens_out != nullptr, "tokens_out is nullptr");
+    HARD_ASSERT(diags_out != nullptr, "diags_out is nullptr");
 
     lexer_state_t state = {};
     state.buffer = buffer;

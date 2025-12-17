@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 
-#include "lexer_tokenizer.h"
+#include "libs/My_string/include/my_string.h"
+#include "libs/Vector/include/vector.h"
 
 enum error_source_t {
     LEXER_ERROR,

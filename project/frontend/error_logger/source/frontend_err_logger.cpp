@@ -1,4 +1,5 @@
 #include "frontend_err_logger.h"
+#include "lexer/include/lexer_tokenizer.h"
 #include "common/console_colors/include/colors.h"
 #include "common/logger/include/logger.h"
 
@@ -82,7 +83,7 @@ void print_diags(FILE* stream, c_string_t buffer, error_source_t source,
 
     size_t diag_count = vector_size(diags);
     for (size_t i = 0; i < diag_count; ++i) {
-        lexer_diag_t* diag = (lexer_diag_t*)vector_get_const(diags, i);
+        const lexer_diag_t* diag = (const lexer_diag_t*)vector_get_const(diags, i);
         if (diag == nullptr) continue;
 
         if (source == LEXER_ERROR) {

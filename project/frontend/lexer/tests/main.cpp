@@ -1,6 +1,6 @@
 #include "lexer_tokenizer.h"
-#include "frontend_err_logger.h"
 
+#include "error_logger/include/frontend_err_logger.h"
 #include "common/keywords/include/keywords.h"
 
 #include <stdio.h>
