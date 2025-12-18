@@ -5,7 +5,7 @@
 
 //================================================================================
 
-enum opcode_t {
+enum op_code_t {
     OP_NONE = 0,
 
     OP_EQ,                                      
@@ -24,13 +24,11 @@ enum opcode_t {
 
     OP_ASSIGN,  
 
-    OP_VIS_START,                             
-    OP_VIS_END,                
+    OP_VIS_START,                                           
     OP_LCAT,                             
     OP_ENUM_SEP,    
 
-    OP_IF,                             
-    OP_ELSE,    
+    OP_IF,                              
 
     OP_WHILE,                             
     OP_BREAK,                             
@@ -40,17 +38,19 @@ enum opcode_t {
     OP_RETURN,                             
     OP_FUNC_DECL, 
     OP_PROC_DECL, 
+    OP_FUNC_INFO,
 
     OP_CALL,           
     
     OP_PRINT,                             
     OP_INPUT,
+
 };
 
 //================================================================================
 
 struct keyword_def_t {
-    opcode_t       opcode;
+    op_code_t       op_code;
     const char*    lang_name; // имя в языке (может содержать пробелы)
     const char*    tree_name; // имя в дереве (AST)
 };

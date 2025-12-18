@@ -9,9 +9,11 @@ TST_DIR   := tests
 BUILD_DIR ?= build
 OBJ_DIR   := $(BUILD_DIR)/obj
 BIN_DIR   := $(BUILD_DIR)/bin
-LIB_DIR   := $(BUILD_DIR)/lib
+LIB_DIR   ?= $(BUILD_DIR)/lib
 
 CXX       ?= g++
+AR        ?= ar
+ARFLAGS   ?= rcs
 
 # debug | release
 CFG ?= debug
@@ -20,9 +22,9 @@ STD   ?= -std=c++17
 INCS  := -I$(INC_DIR) -I$(INT_DIR) -I$(PARENT_DIR) -I$(PARENT_DIR)/project/frontend
 
 
-SAN_FLAGS := -fsanitize=address,undefined,leak -fno-omit-frame-pointer
+SAN_FLAGS  ?= -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
-WARN_FLAGS := \
+WARN_FLAGS ?= \
 	-Wshadow -Winit-self -Wredundant-decls \
 	-Wcast-align -Wundef -Wfloat-equal -Winline \
 	-Wunreachable-code -Wmissing-declarations \
@@ -70,18 +72,19 @@ DEPS     := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
 
 # ================================================================================
 
-EXT_LIB_NAME_1	 := common
-EXT_LIB_NAME_2	 := Vector
-EXT_LIB_NAME_3	 := My_string
+EXT_LIB_DIR_1    ?= $(PARENT_DIR)/common
+EXT_LIB_TARGET_1 ?= lib
+EXT_LIB_A_1      ?= $(EXT_LIB_DIR_1)/build/lib/libcommon.a  
 
-EXT_LIB_DIR_1    ?= $(PARENT_DIR)/$(EXT_LIB_NAME_1)
-EXT_LIB_A_1      ?= $(EXT_LIB_DIR_1)/build/lib/lib$(EXT_LIB_NAME_1).a  
+EXT_LIB_DIR_2    ?= $(PARENT_DIR)/libs/Vector
+EXT_LIB_TARGET_2 ?= lib
+EXT_LIB_A_2      ?= $(EXT_LIB_DIR_2)/build/lib/libVector.a  
 
-EXT_LIB_DIR_2    ?= $(PARENT_DIR)/libs/$(EXT_LIB_NAME_2)
-EXT_LIB_A_2      ?= $(EXT_LIB_DIR_2)/build/lib/lib$(EXT_LIB_NAME_2).a  
+EXT_LIB_DIR_3    ?= $(PARENT_DIR)/libs/My_string
+EXT_LIB_TARGET_3 ?= lib
+EXT_LIB_A_3      ?= $(EXT_LIB_DIR_3)/build/lib/libMy_string.a  
 
-EXT_LIB_DIR_3    ?= $(PARENT_DIR)/libs/$(EXT_LIB_NAME_3)
-EXT_LIB_A_3      ?= $(EXT_LIB_DIR_3)/build/lib/lib$(EXT_LIB_NAME_3).a  
+EXT_LIBS := $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3)
 
 # ================================================================================
 
@@ -89,32 +92,35 @@ EXT_LIB_A_3      ?= $(EXT_LIB_DIR_3)/build/lib/lib$(EXT_LIB_NAME_3).a
 
 all: test
 
+
 help:
 	@echo "Targets:"
+	@echo "  make lib         - build static library   ($(LIB_PATH))"
 	@echo "  make test        - build tests executable ($(TST_EXE))"
 	@echo "  make clean"
+	@echo "  make test_clean  - clear after test"
 	@echo "  CFG=debug|release "
 
-test: $(TST_EXE)
+test: $(EXT_LIBS) $(TST_EXE)
 
 lib: $(LIB_PATH)
 
-$(TST_EXE): $(LIB_OBJS) $(TST_OBJS) $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3) $(EXT_LIB_A_4)
+$(TST_EXE): $(LIB_PATH) $(TST_OBJS) $(EXT_LIBS)
 	@mkdir -p $(dir $@)
-	@$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
+	@$(CXX) $(TST_OBJS) $(LIB_PATH) $(EXT_LIBS) -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(EXT_LIB_A_1):
-	@$(MAKE) -C "$(EXT_LIB_DIR_1)" "lib" \
+	@$(MAKE) -C "$(EXT_LIB_DIR_1)" "$(EXT_LIB_TARGET_1)" \
 		CFG="$(CFG)" CXX="$(CXX)" DEFS="$(DEFS)" STD="$(STD)" SAN_FLAGS="$(SAN_FLAGS)" \
 		WARN_FLAGS="$(WARN_FLAGS)" LDFLAGS="$(LDFLAGS)" LDLIBS="$(LDLIBS)"
 
 $(EXT_LIB_A_2):
-	@$(MAKE) -C "$(EXT_LIB_DIR_2)" "lib" \
+	@$(MAKE) -C "$(EXT_LIB_DIR_2)" "$(EXT_LIB_TARGET_2)" \
 		CFG="$(CFG)" CXX="$(CXX)" DEFS="$(DEFS)" STD="$(STD)" SAN_FLAGS="$(SAN_FLAGS)" \
 		WARN_FLAGS="$(WARN_FLAGS)" LDFLAGS="$(LDFLAGS)" LDLIBS="$(LDLIBS)"
 
 $(EXT_LIB_A_3):
-	@$(MAKE) -C "$(EXT_LIB_DIR_3)" "lib" \
+	@$(MAKE) -C "$(EXT_LIB_DIR_3)" "$(EXT_LIB_TARGET_3)" \
 		CFG="$(CFG)" CXX="$(CXX)" DEFS="$(DEFS)" STD="$(STD)" SAN_FLAGS="$(SAN_FLAGS)" \
 		WARN_FLAGS="$(WARN_FLAGS)" LDFLAGS="$(LDFLAGS)" LDLIBS="$(LDLIBS)"
 

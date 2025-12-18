@@ -11,19 +11,20 @@
 //================================================================================
 
 enum lexer_token_kind_t {
-    LEX_TK_EOF     = 0,
-    LEX_TK_NUMBER  = 1,
-    LEX_TK_IDENT   = 2,
-    LEX_TK_LPAREN  = 3,
-    LEX_TK_RPAREN  = 4,
-    LEX_TK_KEYWORD = 5,
+    LEX_TK_EOF,     
+    LEX_TK_NUMBER,  
+    LEX_TK_IDENT,   
+    LEX_TK_LPAREN, 
+    LEX_TK_RPAREN, 
+    LEX_TK_RBRACE,  
+    LEX_TK_KEYWORD, 
 };
 
 enum lexer_error_t {
-    LEX_ERR_OK       = 0,
-    LEX_ERR_BAD_ARG  = 1,
-    LEX_ERR_NO_MEM   = 2,
-    LEX_ERR_VEC_FAIL = 3,
+    LEX_ERR_OK,       
+    LEX_ERR_BAD_ARG,  
+    LEX_ERR_NO_MEM,   
+    LEX_ERR_VEC_FAIL, 
 };
 
 //================================================================================
@@ -48,7 +49,7 @@ struct lexer_token_t {
     size_t     column;
 
     double     number;
-    opcode_t   opcode;
+    op_code_t  op_code;
 };
 
 

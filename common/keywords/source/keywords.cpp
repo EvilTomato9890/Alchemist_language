@@ -20,12 +20,10 @@ const keyword_def_t KEYWORDS[] = {
     {OP_ASSIGN,    "=",             "ASSIGN"},
                                      
     {OP_VIS_START, "{",             "VIS_START"},
-    {OP_VIS_END,   "}",             "VIS_END"},
     {OP_LCAT,      ";",             "LCAT"},
     {OP_ENUM_SEP,  ",",             "ENUM_SEP"},
                
     {OP_IF,         "if",           "IF"},
-    {OP_ELSE,       "else",         "ELSE"},
 
     {OP_WHILE,      "while",        "WHILE"},
     {OP_BREAK,      "break",        "BREAK"},
@@ -36,10 +34,13 @@ const keyword_def_t KEYWORDS[] = {
 
     {OP_FUNC_DECL,  "func decl",    "FUNC_DECL"},
     {OP_PROC_DECL,  "proc decl",    "PROC_DECL"},
+
     {OP_CALL,       "call",         "CALL"},
 
     {OP_PRINT,      "print",        "PRINT"},
     {OP_INPUT,      "input",        "INPUT"},
+
+    {OP_FUNC_INFO,  "NOT_FOR_CODE", "FUNC_INFO"}
     
 };
 
@@ -49,6 +50,7 @@ const size_t KEYWORDS_COUNT =
 //================================================================================
 
 const keyword_def_t IGNORED_KEYWORDS[] = {
+    {OP_NONE, "NOT_FOR_CODE", nullptr},
     {OP_NONE, "and", nullptr},
     {OP_NONE, "or",  nullptr},
 };

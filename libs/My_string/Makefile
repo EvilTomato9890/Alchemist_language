@@ -9,7 +9,7 @@ TST_DIR   := tests
 BUILD_DIR ?= build
 OBJ_DIR   := $(BUILD_DIR)/obj
 BIN_DIR   := $(BUILD_DIR)/bin
-LIB_DIR   := $(BUILD_DIR)/lib
+LIB_DIR   ?= $(BUILD_DIR)/lib
 
 CXX       ?= g++
 AR        ?= ar
@@ -22,9 +22,9 @@ STD   ?= -std=c++17
 INCS  := -I$(INC_DIR) -I$(INT_DIR) -I../..
 
 
-SAN_FLAGS := -fsanitize=address,undefined,leak -fno-omit-frame-pointer
+SAN_FLAGS  ?= -fsanitize=address,undefined,leak -fno-omit-frame-pointer
 
-WARN_FLAGS := \
+WARN_FLAGS ?= \
 	-Wshadow -Winit-self -Wredundant-decls \
 	-Wcast-align -Wundef -Wfloat-equal -Winline \
 	-Wunreachable-code -Wmissing-declarations \
@@ -72,14 +72,15 @@ DEPS     := $(LIB_OBJS:.o=.d) $(TST_OBJS:.o=.d)
 
 # ================================================================================
 
-.PHONY: all test lib clean help
+.PHONY: all test lib clean test_clean help
 
 all: test
 
+
 help:
 	@echo "Targets:"
-	@echo "  make test        - build tests executable ($(TST_EXE))"
 	@echo "  make lib         - build static library   ($(LIB_PATH))"
+	@echo "  make test        - build tests executable ($(TST_EXE))"
 	@echo "  make clean"
 	@echo "  CFG=debug|release "
 
@@ -87,9 +88,9 @@ test: $(TST_EXE)
 
 lib: $(LIB_PATH)
 
-$(TST_EXE): $(LIB_OBJS) $(TST_OBJS)
+$(TST_EXE): $(LIB_PATH) $(TST_OBJS)
 	@mkdir -p $(dir $@)
-	@$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
+	@$(CXX) $(TST_OBJS) $(LIB_PATH) -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(LIB_PATH): $(LIB_OBJS)
 	@mkdir -p $(dir $@)
@@ -104,6 +105,9 @@ $(OBJ_DIR)/%.o: %.c
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 -include $(DEPS)
+
+test_clean:
+	rm -rf $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)

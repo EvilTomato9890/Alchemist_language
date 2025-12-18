@@ -12,14 +12,15 @@ static const char* token_kind_name(lexer_token_kind_t kind) {
         case LEX_TK_IDENT:   return "IDENT";
         case LEX_TK_LPAREN:  return "LPAREN";
         case LEX_TK_RPAREN:  return "RPAREN";
+        case LEX_TK_RBRACE:  return "RBRACE";
         case LEX_TK_KEYWORD: return "KEYWORD";
         default:             return "UNKNOWN";
     }
 }
 
-static const char* opcode_tree_name(opcode_t opcode) {
+static const char* op_code_tree_name(op_code_t op_code) {
     for (size_t i = 0; i < KEYWORDS_COUNT; ++i) {
-        if (KEYWORDS[i].opcode == opcode)
+        if (KEYWORDS[i].op_code == op_code)
             return KEYWORDS[i].tree_name;
     }
     return nullptr;
@@ -40,8 +41,8 @@ static void print_token(const lexer_token_t* token) {
     }
 
     if (token->kind == LEX_TK_KEYWORD) {
-        const char* tree = opcode_tree_name(token->opcode);
-        printf("op=%d", (int)token->opcode);
+        const char* tree = op_code_tree_name(token->op_code);
+        printf("op=%d", (int)token->op_code);
         if (tree != nullptr) printf("(%s)", tree);
         printf("  lex='");
         printf("%.*s", (int)token->lexeme.len, token->lexeme.ptr);
@@ -61,7 +62,8 @@ int main() {
         "aaaa  bbbb @@@@@@@@@@@@@\n"
         "AAB */ bbbb\n"
         "call foo;\n"
-        "return 42;\n";
+        "x = -5\n"
+        "NOT_FOR_CODE return 42;\n";
 
     c_string_t buffer = { text, 0 };
     while (text[buffer.len] != '\0') buffer.len++;

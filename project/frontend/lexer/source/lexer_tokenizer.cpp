@@ -436,11 +436,17 @@ static lexer_error_t lex_try_parens(lexer_state_t* state, bool* matched_out) {
     if (state->position >= state->buffer.len) return LEX_ERR_OK;
 
     char ch = state->buffer.ptr[state->position];
-    if (ch != '(' && ch != ')') return LEX_ERR_OK;
+    if (ch != '(' && ch != ')' && ch != '}') return LEX_ERR_OK;
 
     lexer_token_t token = {};
 
-    token.kind     = (ch == '(') ? LEX_TK_LPAREN : LEX_TK_RPAREN;
+    if(ch == '(') {
+        token.kind = LEX_TK_LPAREN;
+    } else if (ch == ')') {
+        token.kind = LEX_TK_RPAREN;
+    } else {    
+        token.kind = LEX_TK_RBRACE;
+    }
     token.position = state->position;
     token.line     = state->line;
     token.column   = state->column;
@@ -511,7 +517,7 @@ static lexer_error_t lex_try_keyword(lexer_state_t* state, bool* matched_out) {
     token.position = state->position;
     token.line     = state->line;
     token.column   = state->column;
-    token.opcode   = best->opcode;
+    token.op_code   = best->op_code;
 
     lexer_make_lexeme(&token.lexeme, state->buffer, state->position, advance);
 

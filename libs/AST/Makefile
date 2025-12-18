@@ -84,6 +84,8 @@ EXT_LIB_DIR_3    ?= ../../common
 EXT_LIB_TARGET_3 ?= lib
 EXT_LIB_A_3      ?= $(EXT_LIB_DIR_3)/build/lib/libcommon.a
 
+EXT_LIBS := $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3)
+
 # ================================================================================
 .PHONY: all test lib clean test_clean help
 
@@ -93,11 +95,12 @@ all: test
 help:
 	@echo "Targets:"
 	@echo "  make lib         - build static library   ($(LIB_PATH))"
+	@echo "  make test        - build tests executable ($(TST_EXE))"
 	@echo "  make clean"
 	@echo "  make test_clean  - clear after test"
 	@echo "  CFG=debug|release "
 
-test: $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(TST_EXE)
+test: $(EXT_LIBS) $(TST_EXE)
 
 lib: $(LIB_PATH)
 
@@ -105,9 +108,9 @@ $(LIB_PATH): $(LIB_OBJS)
 	@mkdir -p $(dir $@)
 	@$(AR) $(ARFLAGS) $@ $^
 
-$(TST_EXE): $(LIB_PATH) $(TST_OBJS) $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3)
+$(TST_EXE): $(LIB_PATH) $(TST_OBJS) $(EXT_LIBS)
 	@mkdir -p $(dir $@)
-	@$(CXX) $(TST_OBJS) $(LIB_PATH) $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3) -o $@ $(LDFLAGS) $(LDLIBS)
+	@$(CXX) $(TST_OBJS) $(LIB_PATH) $(EXT_LIBS) -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(EXT_LIB_A_1):
 	@$(MAKE) -C "$(EXT_LIB_DIR_1)" "$(EXT_LIB_TARGET_1)" \

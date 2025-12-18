@@ -106,7 +106,7 @@ error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out) {
     return error;
 }
 
-error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info)) {
+error_code tree_init(tree_t* tree ON_TREE_DEBUG(, tree_ver_info_t ver_info)) {
     HARD_ASSERT(tree != nullptr, "tree pointer is nullptr");
 
     LOGGER_DEBUG("tree_init: started");
@@ -117,7 +117,13 @@ error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver
     tree->size = 0;
     tree->buff = {nullptr, 0};
 
-    //error = stack_init(stack, 10 ON_TREE_DEBUG(, TREE_VER_INIT));
+    ident_stack_t* stack = (ident_stack_t*)calloc(1, sizeof(ident_stack_t));
+    if (stack == nullptr) {
+        LOGGER_ERROR("tree_init: calloc failed for ident_stack");
+        return ERROR_MEM_ALLOC;
+    }
+    error = ident_stack_init(stack, 10 ON_STACK_DEBUG(, STACK_VER_INIT));
+
     tree->ident_stack = stack;
 
     ON_TREE_DEBUG({

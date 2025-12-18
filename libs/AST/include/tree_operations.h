@@ -8,7 +8,7 @@
 #include "libs/AST/internal/debug_meta.h"
 #include "common/keywords/include/keywords.h"
 
-error_code tree_init(tree_t* tree, ident_stack_t* stack ON_TREE_DEBUG(, tree_ver_info_t ver_info));
+error_code tree_init(tree_t* tree ON_TREE_DEBUG(, tree_ver_info_t ver_info));
 
 tree_node_t* init_node(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right);
 tree_node_t* init_node_with_dump(node_type_t node_type, value_t value, tree_node_t* left, tree_node_t* right, const tree_t* tree);
