@@ -32,8 +32,8 @@ const keyword_def_t KEYWORDS[] = {
     {OP_FINISH,     "finish",       "FINISH"},
     {OP_RETURN,     "return",       "RETURN"},
 
-    {OP_FUNC_DECL,  "func decl",    "FUNC_DECL"},
-    {OP_PROC_DECL,  "proc decl",    "PROC_DECL"},
+    {OP_FUNC_DECL,  "func",         "FUNC_DECL"},
+    {OP_PROC_DECL,  "proc",         "PROC_DECL"},
 
     {OP_CALL,       "call",         "CALL"},
 

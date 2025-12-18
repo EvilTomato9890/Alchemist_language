@@ -11,7 +11,38 @@
 #include "common/keywords/include/keywords.h"
 
 #include "libs/AST/include/tree_operations.h"
+#include "libs/AST/include/tree_verification.h"
 #include "libs/Stack/include/ident_stack.h"
+
+static const char* token_kind_name(lexer_token_kind_t kind) {
+    switch (kind) {
+        case LEX_TK_EOF:     return "EOF";
+        case LEX_TK_NUMBER:  return "NUMBER";
+        case LEX_TK_IDENT:   return "IDENT";
+        case LEX_TK_LPAREN:  return "LPAREN";
+        case LEX_TK_RPAREN:  return "RPAREN";
+        case LEX_TK_RBRACE:  return "RBRACE";
+        case LEX_TK_KEYWORD: return "KEYWORD";
+        default:             return "UNKNOWN";
+    }
+}
+
+static void dump_tokens(const vector_t* tokens, size_t limit) {
+    size_t count = vector_size(tokens);
+    if (count < limit) limit = count;
+
+    for (size_t index = 0; index < limit; ++index) {
+        const lexer_token_t* token =
+            (const lexer_token_t*)vector_get_const(tokens, index);
+
+        printf("[%zu] kind=%s opcode=%d lex='%.*s'\n",
+               index,
+               token_kind_name(token->kind),
+               (int)token->op_code,
+               (int)token->lexeme.len, token->lexeme.ptr);
+    }
+}
+
 
 static bool read_file_all(const char* filepath,
                           char** data_out,
@@ -23,9 +54,10 @@ static bool read_file_all(const char* filepath,
     *data_out = nullptr;
     *size_out = 0;
 
-    FILE* file = fopen(filepath, "rb");
+    LOGGER_DEBUG("Reading file: %s", filepath);
+    FILE* file = fopen(filepath, "r");
     if (file == nullptr) return false;
-
+    LOGGER_DEBUG("File opened: %s", filepath);
     if (fseek(file, 0, SEEK_END) != 0) {
         fclose(file);
         return false;
@@ -42,6 +74,7 @@ static bool read_file_all(const char* filepath,
         return false;
     }
 
+    LOGGER_DEBUG("File size: %ld bytes", file_size);
     char* buffer_data = (char*)calloc((size_t)file_size + 1, 1);
     if (buffer_data == nullptr) {
         fclose(file);
@@ -108,7 +141,7 @@ int main(int argc, char** argv) {
 
     lexer_error_t lex_error = lexer_tokenize(buffer, &lexer_cfg,
                                              &token_vec, &diag_vec);
-
+    dump_tokens(&token_vec, 100);
     if (vector_size(&diag_vec) != 0) {
         print_diags(stderr, buffer, filename, &diag_vec);
     }
@@ -132,16 +165,21 @@ int main(int argc, char** argv) {
 
     error_code tree_error = tree_init(&tree ON_TREE_DEBUG(, TREE_VER_INIT));
     (void)tree_error;
-
+    ON_TREE_DEBUG(
+        tree_open_dump_file(&tree, "parser_test_tree_dump.txt");
+    )
     LOGGER_DEBUG("Starting frontend_parse_ast");
     frontend_parse_ast(&tree, &token_vec, &func_table, &diag_vec);
 
     if (vector_size(&diag_vec) != 0) {
         print_diags(stderr, buffer, filename, &diag_vec);
     }
-
+    tree_dump(&tree, TREE_VER_INIT, true, "Final AST after parsing");
+    ON_TREE_DEBUG(
+        tree_close_dump_file(&tree);
+    )
     tree_destroy(&tree);
-
+    
     u_map_destroy(&func_table);
     vector_destroy(&token_vec);
     vector_destroy(&diag_vec);

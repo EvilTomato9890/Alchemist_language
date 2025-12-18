@@ -22,5 +22,8 @@ error_code tree_dump(const tree_t* tree,
                      bool is_visual,
                      const char* fmt, ...);
 
+error_code tree_open_dump_file(tree_t* tree, const char* dump_file_name);
+
+error_code tree_close_dump_file(tree_t* tree);
 #endif /* LIBS_AST_INCLUDE_TREE_VERIFICATION_H_NCLUDED */
 

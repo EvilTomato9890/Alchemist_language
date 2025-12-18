@@ -1,0 +1,11 @@
+func test(a, b) { 
+	x = 5; 
+	return x; 
+} 
+func test2(a, b) { 
+	x = a; 
+	if a = b {
+		return x;
+	} 
+	print x;
+} 

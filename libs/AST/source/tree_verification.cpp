@@ -10,7 +10,7 @@
 #include <string.h>
 #include <time.h>
 
-#ifndef VERIFY_DEBUG
+#ifndef TREE_VERIFY_DEBUG
 
 error_code tree_verify(const tree_t* tree,
                        tree_ver_info_t ver_info,
@@ -144,7 +144,7 @@ static const char* node_val_to_str(const tree_t* tree, const tree_node_t* node,
             snprintf(buf, buf_size, "%lf", node->value.constant);
             return buf;
         case VARIABLE: {
-            c_string_t curr_string = tree->ident_stack->data[node->value.var_idx].str;
+            c_string_t curr_string = tree->ident_stack->data[node->value.var_idx];
             if(buf_size < curr_string.len) LOGGER_WARNING("string len is bigger than buf_size. Printed %ld symbols, srt_len: %ld", buf_size, curr_string.len);
             
             
@@ -175,9 +175,9 @@ static void print_node_label(const tree_t* tree, const tree_node_t* node, FILE* 
             const char* val_str = node_val_to_str(tree, self, val_buf, sizeof val_buf);       \
             fprintf(file,                                                               \
                     "  node_%p[shape=record,"                                           \
-                    "label=\"{ {ptr: %p} | {val: %s | len: %zu} | { prev: %p | next: %p } }\","    \
+                    "label=\"{ {ptr: %p} | {val: %s} | { prev: %p | next: %p } }\","    \
                     "color=\"" node_color "\",fillcolor=\"" node_fill "\"];\n",         \
-                    self, self, val_str, self->subtree_tex_len,                                              \
+                    (const void*)self, (const void*)self, val_str,                                              \
                     left, right);                                                       \
         } while (0)
 
@@ -235,8 +235,8 @@ static int dump_make_graphviz_svg(const tree_t* tree, const char* base) {
     }
     for (i = 0; i < n; ++i) {
         const tree_node_t* node = nodes[i];
-        if (node->left)  fprintf(file, "  node_%p -> node_%p [color=\"%s\"];\n", node, node->left,  EDGE_COLOR);
-        if (node->right) fprintf(file, "  node_%p -> node_%p [color=\"%s\"];\n", node, node->right, EDGE_COLOR);
+        if (node->left)  fprintf(file, "  node_%p -> node_%p [color=\"%s\"];\n", (const void*)node, (const void*)node->left,  EDGE_COLOR);
+        if (node->right) fprintf(file, "  node_%p -> node_%p [color=\"%s\"];\n", (const void*)node, (const void*)node->right, EDGE_COLOR);
     }
     fprintf(file, "}\n");
     fclose(file);
@@ -271,12 +271,12 @@ static error_code write_html(const tree_t* tree,
                              tree_ver_info_t ver_info_called,
                              int idx, const char* comment,
                              const char* svg_path, int is_visual) {
-    if (!tree || !tree->dump_file || !*tree->dump_file) {
+    if (!tree || !tree->dump_file) {
         LOGGER_ERROR("write_html: null args");
         return ERROR_NULL_ARG;
     }
     
-    FILE* html = *tree->dump_file;
+    FILE* html = tree->dump_file;
     
     time_t t = time(nullptr);
     char ts[BUFFER_SIZE_TIME] = {};
@@ -296,13 +296,12 @@ static error_code write_html(const tree_t* tree,
     fprintf(html,
         "<span style=\"color:%s;font-weight:700;\">===================================================</span>\n",
         HTML_BORDER);
-    fprintf(html, "tree ptr  : %p\n", tree);
-    fprintf(html, "root ptr  : %p\n", tree->root);
+    fprintf(html, "tree ptr  : %p\n",  (const void*)tree);
+    fprintf(html, "root ptr  : %p\n",  (const void*)tree->root);
     fprintf(html, "size      : %zu\n", tree->size);
-    fprintf(html, "stack ptr : %p\n", tree->ident_stack);
-    fprintf(html, "buff.ptr  : %p\n", tree->buff.ptr);
+    fprintf(html, "stack ptr : %p\n",  (const void*)tree->ident_stack);
+    fprintf(html, "buff.ptr  : %p\n",  (const void*)tree->buff.ptr);
     fprintf(html, "buff.len  : %zu\n", tree->buff.len);
-    fprintf(html, "list idx  : %zu\n", tree->list_idx);
     
 
     fprintf(html, "\n-- Created at (tree ver_info) --\n");
@@ -335,10 +334,10 @@ static error_code write_html(const tree_t* tree,
         const char* value = node_val_to_str(tree, node, str_buf, MAX_STRLEN_VALUE);
         const char* type_str = node ? node_type_to_string(node->type) : "NULL";
         fprintf(html, "%-4zu  %-14p  %-14s  %-14p  %-14p  %s\n",
-                i, node,
+                i, (const void*)node,
                 type_str,
-                (node ? node->left   : nullptr),
-                (node ? node->right  : nullptr),
+                (node ? (const void*)node->left   : nullptr),
+                (node ? (const void*)node->right  : nullptr),
                 value);
     }
 
@@ -398,4 +397,34 @@ error_code tree_dump(const tree_t* tree,
     return error;
 }
 
+error_code tree_open_dump_file(tree_t* tree, const char* dump_file_name) {
+    HARD_ASSERT(tree            != nullptr, "Tree_ptr is nullptr");
+    HARD_ASSERT(dump_file_name  != nullptr, "Dump_file_name is nullptr");
+    LOGGER_DEBUG("Forest_open_dump_file: started");
+
+    FILE* dump_file = fopen(dump_file_name, "w");
+    if(!dump_file) {
+        LOGGER_ERROR("File open error");
+        return ERROR_OPEN_FILE;
+    }
+    tree->dump_file = dump_file;
+    return ERROR_NO;
+}
+
+error_code tree_close_dump_file(tree_t* tree) {
+    HARD_ASSERT(tree != nullptr, "Tree is nullptr");
+
+    LOGGER_DEBUG("Forest_close_dump_file: started");
+    if(!tree->dump_file) {
+        LOGGER_WARNING("dump_file is nullptr");
+        return ERROR_NO;
+    }
+
+    int error = fclose(tree->dump_file);
+    if(error != 0) {
+        LOGGER_ERROR("forest_close_dump_file: Failed to close dump_file");
+        return ERROR_CLOSE_FILE;
+    }
+    return ERROR_NO;
+}
 #endif 

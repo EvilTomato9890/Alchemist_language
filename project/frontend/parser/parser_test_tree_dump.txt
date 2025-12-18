@@ -1,0 +1,68 @@
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #0 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 06:06:40</span>
+<span style="color:#ff4d4f;font-weight:700;">Final AST after parsing</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x7af941c00170
+root ptr  : 0x5030000008e0
+size      : 38
+stack ptr : 0x506000000020
+buff.ptr  : (nil)
+buff.len  : 0
+
+-- Created at (tree ver_info) --
+file: tests/main.cpp
+func: main
+line: 166
+
+-- Called at (passed ver_info) --
+file: tests/main.cpp
+func: main
+line: 177
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x5030000008e0  FUNCTION        (nil)           0x5030000008b0  VIS_START
+1     0x5030000008b0  FUNCTION        0x503000000430  0x503000000880  LCAT
+2     0x503000000430  FUNCTION        0x5030000002b0  0x503000000400  FUNC_DECL
+3     0x5030000002b0  FUNCTION        0x503000000250  0x503000000280  FUNC_INFO
+4     0x503000000250  FUNCTION        0x5030000001f0  0x503000000220  ENUM_SEP
+5     0x5030000001f0  VARIABLE        (nil)           (nil)           a
+6     0x503000000220  VARIABLE        (nil)           (nil)           b
+7     0x503000000280  VARIABLE        (nil)           (nil)           test
+8     0x503000000400  FUNCTION        (nil)           0x5030000003d0  VIS_START
+9     0x5030000003d0  FUNCTION        0x503000000340  0x5030000003a0  LCAT
+10    0x503000000340  FUNCTION        0x5030000002e0  0x503000000310  ASSIGN
+11    0x5030000002e0  VARIABLE        (nil)           (nil)           x
+12    0x503000000310  CONSTANT        (nil)           (nil)           5.000000
+13    0x5030000003a0  FUNCTION        (nil)           0x503000000370  RETURN
+14    0x503000000370  VARIABLE        (nil)           (nil)           x
+15    0x503000000880  FUNCTION        0x503000000520  0x503000000850  FUNC_DECL
+16    0x503000000520  FUNCTION        0x5030000004c0  0x5030000004f0  FUNC_INFO
+17    0x5030000004c0  FUNCTION        0x503000000460  0x503000000490  ENUM_SEP
+18    0x503000000460  VARIABLE        (nil)           (nil)           a
+19    0x503000000490  VARIABLE        (nil)           (nil)           b
+20    0x5030000004f0  VARIABLE        (nil)           (nil)           test2
+21    0x503000000850  FUNCTION        (nil)           0x503000000820  VIS_START
+22    0x503000000820  FUNCTION        0x503000000790  0x5030000007f0  LCAT
+23    0x503000000790  FUNCTION        0x5030000005b0  0x503000000760  LCAT
+24    0x5030000005b0  FUNCTION        0x503000000550  0x503000000580  ASSIGN
+25    0x503000000550  VARIABLE        (nil)           (nil)           x
+26    0x503000000580  VARIABLE        (nil)           (nil)           a
+27    0x503000000760  FUNCTION        0x5030000006a0  0x503000000730  IF
+28    0x5030000006a0  FUNCTION        0x503000000640  0x503000000670  EQ
+29    0x503000000640  FUNCTION        0x5030000005e0  0x503000000610  ASSIGN
+30    0x5030000005e0  VARIABLE        (nil)           (nil)           a
+31    0x503000000610  VARIABLE        (nil)           (nil)           b
+32    0x503000000670  CONSTANT        (nil)           (nil)           1.000000
+33    0x503000000730  FUNCTION        (nil)           0x503000000700  VIS_START
+34    0x503000000700  FUNCTION        (nil)           0x5030000006d0  RETURN
+35    0x5030000006d0  VARIABLE        (nil)           (nil)           x
+36    0x5030000007f0  FUNCTION        (nil)           0x5030000007c0  PRINT
+37    0x5030000007c0  VARIABLE        (nil)           (nil)           x
+
+SVG: dumps/tree_dump_000.svg
+</pre>
+<img src="dumps/tree_dump_000.svg" style="max-width:2250px;"/>
+
+<hr>
