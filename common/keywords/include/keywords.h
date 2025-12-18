@@ -50,9 +50,10 @@ enum op_code_t {
 //================================================================================
 
 struct keyword_def_t {
-    op_code_t       op_code;
-    const char*    lang_name; // имя в языке (может содержать пробелы)
-    const char*    tree_name; // имя в дереве (AST)
+    op_code_t      op_code;
+    const char*    lang_name; 
+    const char*    tree_name; 
+    bool           is_func;
 };
 
 //================================================================================

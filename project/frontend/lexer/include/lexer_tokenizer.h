@@ -50,6 +50,7 @@ struct lexer_token_t {
 
     double     number;
     op_code_t  op_code;
+    bool       is_func;
 };
 
 

@@ -517,8 +517,9 @@ static lexer_error_t lex_try_keyword(lexer_state_t* state, bool* matched_out) {
     token.position = state->position;
     token.line     = state->line;
     token.column   = state->column;
-    token.op_code   = best->op_code;
-
+    token.op_code  = best->op_code;
+    token.is_func  = best->is_func;
+    
     lexer_make_lexeme(&token.lexeme, state->buffer, state->position, advance);
 
     lexer_error_t err = lexer_push_token(state, &token);

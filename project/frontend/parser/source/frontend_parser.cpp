@@ -14,22 +14,6 @@
 #include <stdint.h>
 
 //================================================================================
-//                               Kjub
-//================================================================================
-
-static const int DIAG_PARSE_EXPECTED        = 100;
-static const int DIAG_PARSE_UNDEF_FUNCTION  = 101;
-static const int DIAG_PARSE_REDEF_FUNCTION  = 102;
-static const int DIAG_PARSE_NESTED_DECL     = 103;
-static const int DIAG_PARSE_VOID_IN_EXPR    = 104;
-static const int DIAG_PARSE_RETURN_IN_PROC  = 105;
-static const int DIAG_PARSE_FINISH_IN_FUNC  = 106;
-static const int DIAG_PARSE_BREAK_OUTSIDE   = 107;
-static const int DIAG_PARSE_ARGC_MISMATCH   = 108;
-static const int DIAG_PARSE_UNDEF_VARIABLE  = 200;
-static const int DIAG_PARSE_TOPLEVEL_STMT   = 201;
-
-//================================================================================
 
 struct var_info_t {
     size_t    scope_depth;
@@ -59,6 +43,11 @@ struct parser_state_t {
     op_code_t        current_decl; // OP_FUNC_DECL | OP_PROC_DECL | OP_NONE
     size_t           while_depth;
 };
+
+static bool opcode_is_void_builtin(op_code_t opcode) {
+    return opcode == OP_PRINT; 
+}
+
 
 static const lexer_token_t* parser_token_at(const parser_state_t* parser,
                                             size_t index) {
@@ -118,7 +107,7 @@ static bool parser_match_keyword(parser_state_t* parser,
     return true;
 }
 
-static void parser_push_diag(parser_state_t* parser, int diag_code,
+static void parser_push_diag(parser_state_t* parser, diag_code_t diag_code,
                              const lexer_token_t* token,
                              const char* format, ...) {
     HARD_ASSERT(parser != nullptr, "parser is nullptr");
@@ -136,7 +125,7 @@ static void parser_push_diag(parser_state_t* parser, int diag_code,
     (void)vsnprintf(message_buf, sizeof(message_buf), format, args);
     va_end(args);
 
-    diag_log_t diag = diag_log_init(PARSER_ERROR, (diag_code_t)diag_code,
+    diag_log_t diag = diag_log_init(PARSER_ERROR, diag_code,
                                    token->position, token->lexeme.len,
                                    token->line, token->column,
                                    "%s", message_buf);
@@ -261,6 +250,7 @@ static void parser_scope_leave(parser_state_t* parser);
 static bool stmt_is_block_like(const tree_node_t* node);
 static bool parser_is_direct_call(const parser_state_t* parser);
 static tree_node_t* parse_direct_call(parser_state_t* parser, bool value_context);
+static tree_node_t* parse_keyword_func_call(parser_state_t* parser, bool value_ctx);
 
 static size_t parse_ident_idx(parser_state_t* parser,
                               const lexer_token_t* token) {
@@ -685,6 +675,13 @@ static tree_node_t* parse_while(parser_state_t* parser) {
 }
 
 static tree_node_t* parse_stmt_expr(parser_state_t* parser) {
+    const lexer_token_t* token = parser_peek(parser);
+    if (token != nullptr &&
+        token->kind == LEX_TK_KEYWORD &&
+        token->is_func) {
+        return parse_keyword_func_call(parser, false);
+    }
+
     if (parser_check_keyword(parser, OP_CALL)) {
         return parse_call(parser, false);
     }
@@ -1011,8 +1008,15 @@ static tree_node_t* parse_unary(parser_state_t* parser) {
 }
 
 static tree_node_t* parse_primary(parser_state_t* parser) {
+    const lexer_token_t* token = parser_peek(parser);
+    if (token != nullptr &&
+        token->kind == LEX_TK_KEYWORD &&
+        token->is_func) {
+        return parse_keyword_func_call(parser, true);
+    }
+
     if (parser_match_kind(parser, LEX_TK_NUMBER)) {
-        const lexer_token_t* token = parser_prev(parser);
+        token = parser_prev(parser);
         return ast_const(token->number);
     }
 
@@ -1029,7 +1033,7 @@ static tree_node_t* parse_primary(parser_state_t* parser) {
     }
 
     if (parser_match_kind(parser, LEX_TK_IDENT)) {
-        const lexer_token_t* token = parser_prev(parser);
+        token = parser_prev(parser);
         size_t name_idx = parse_ident_idx(parser, token);
 
         var_info_t info = {};
@@ -1170,6 +1174,21 @@ static tree_node_t* parse_direct_call(parser_state_t* parser, bool value_context
     return ast_func(OP_CALL, info_node, nullptr);
 }
 
+static tree_node_t* parse_keyword_func_call(parser_state_t* parser, bool value_ctx) {
+    const lexer_token_t* token = parser_advance(parser);
+    op_code_t op_code = token->op_code;
+
+    size_t argc = 0;
+    tree_node_t* args_node = parse_call_args(parser, &argc);
+    if (args_node == nullptr) return nullptr;
+
+    if (value_ctx && opcode_is_void_builtin(op_code)) {
+        parser_push_diag(parser, DIAG_PARSE_VOID_IN_EXPR, token,
+                         "нельзя использовать как выражение");
+    }
+
+    return ast_func(op_code, args_node, nullptr);
+}
 //================================================================================
 //                               Публичный API
 //================================================================================

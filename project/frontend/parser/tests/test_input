@@ -7,5 +7,18 @@ func test2(a, b) {
 	if a = b {
 		return x;
 	} 
-	print x;
+
+	
+	print(x);
+	return x;
 } 
+{
+	{
+	x = 5;
+	}
+}
+{
+	{
+	b = x;
+	}
+}
