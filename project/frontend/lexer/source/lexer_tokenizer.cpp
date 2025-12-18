@@ -69,7 +69,7 @@ static void lexer_skip_spaces(lexer_state_t* state) {
 
     while (state->position < state->buffer.len) {
         unsigned char ch = (unsigned char)state->buffer.ptr[state->position];
-        if (!is_space_char(ch)) break;
+        if (!isspace(ch)) break; //
         lexer_advance(state, 1);
     }
 }

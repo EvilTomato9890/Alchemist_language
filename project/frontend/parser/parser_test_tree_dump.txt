@@ -1,11 +1,11 @@
 <pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
 <span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #0 ]====================</span>
-Timestamp: <span style="color:#8be9fd;">2025-12-18 06:38:31</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 06:48:47</span>
 <span style="color:#ff4d4f;font-weight:700;">Final AST after parsing</span>
 <span style="color:#6b8fd6;font-weight:700;">===================================================</span>
-tree ptr  : 0x70c8e1000170
-root ptr  : 0x503000000bb0
-size      : 53
+tree ptr  : 0x722a52400170
+root ptr  : 0x503000000d00
+size      : 60
 stack ptr : 0x506000000020
 buff.ptr  : (nil)
 buff.len  : 0
@@ -22,59 +22,66 @@ line: 177
 
 IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
 ----  --------------  --------------  --------------  --------------  --------------------
-0     0x503000000bb0  FUNCTION        (nil)           0x503000000b80  VIS_START
-1     0x503000000b80  FUNCTION        0x503000000a60  0x503000000b50  LCAT
-2     0x503000000a60  FUNCTION        0x503000000940  0x503000000a30  LCAT
-3     0x503000000940  FUNCTION        0x503000000430  0x503000000910  LCAT
-4     0x503000000430  FUNCTION        0x5030000002b0  0x503000000400  FUNC_DECL
-5     0x5030000002b0  FUNCTION        0x503000000250  0x503000000280  FUNC_INFO
-6     0x503000000250  FUNCTION        0x5030000001f0  0x503000000220  ENUM_SEP
-7     0x5030000001f0  VARIABLE        (nil)           (nil)           a
-8     0x503000000220  VARIABLE        (nil)           (nil)           b
-9     0x503000000280  VARIABLE        (nil)           (nil)           test
-10    0x503000000400  FUNCTION        (nil)           0x5030000003d0  VIS_START
-11    0x5030000003d0  FUNCTION        0x503000000340  0x5030000003a0  LCAT
-12    0x503000000340  FUNCTION        0x5030000002e0  0x503000000310  ASSIGN
-13    0x5030000002e0  VARIABLE        (nil)           (nil)           x
-14    0x503000000310  CONSTANT        (nil)           (nil)           5.000000
-15    0x5030000003a0  FUNCTION        (nil)           0x503000000370  RETURN
-16    0x503000000370  VARIABLE        (nil)           (nil)           x
-17    0x503000000910  FUNCTION        0x503000000520  0x5030000008e0  FUNC_DECL
-18    0x503000000520  FUNCTION        0x5030000004c0  0x5030000004f0  FUNC_INFO
-19    0x5030000004c0  FUNCTION        0x503000000460  0x503000000490  ENUM_SEP
-20    0x503000000460  VARIABLE        (nil)           (nil)           a
-21    0x503000000490  VARIABLE        (nil)           (nil)           b
-22    0x5030000004f0  VARIABLE        (nil)           (nil)           test2
-23    0x5030000008e0  FUNCTION        (nil)           0x5030000008b0  VIS_START
-24    0x5030000008b0  FUNCTION        0x503000000820  0x503000000880  LCAT
-25    0x503000000820  FUNCTION        0x503000000790  0x5030000007f0  LCAT
-26    0x503000000790  FUNCTION        0x5030000005b0  0x503000000760  LCAT
-27    0x5030000005b0  FUNCTION        0x503000000550  0x503000000580  ASSIGN
-28    0x503000000550  VARIABLE        (nil)           (nil)           x
-29    0x503000000580  VARIABLE        (nil)           (nil)           a
-30    0x503000000760  FUNCTION        0x5030000006a0  0x503000000730  IF
-31    0x5030000006a0  FUNCTION        0x503000000640  0x503000000670  EQ
-32    0x503000000640  FUNCTION        0x5030000005e0  0x503000000610  ASSIGN
-33    0x5030000005e0  VARIABLE        (nil)           (nil)           a
-34    0x503000000610  VARIABLE        (nil)           (nil)           b
-35    0x503000000670  CONSTANT        (nil)           (nil)           1.000000
-36    0x503000000730  FUNCTION        (nil)           0x503000000700  VIS_START
-37    0x503000000700  FUNCTION        (nil)           0x5030000006d0  RETURN
-38    0x5030000006d0  VARIABLE        (nil)           (nil)           x
-39    0x5030000007f0  FUNCTION        (nil)           0x5030000007c0  PRINT
-40    0x5030000007c0  VARIABLE        (nil)           (nil)           x
-41    0x503000000880  FUNCTION        (nil)           0x503000000850  RETURN
-42    0x503000000850  VARIABLE        (nil)           (nil)           x
-43    0x503000000a30  FUNCTION        (nil)           0x503000000a00  VIS_START
-44    0x503000000a00  FUNCTION        (nil)           0x5030000009d0  VIS_START
-45    0x5030000009d0  FUNCTION        0x503000000970  0x5030000009a0  ASSIGN
-46    0x503000000970  VARIABLE        (nil)           (nil)           x
-47    0x5030000009a0  CONSTANT        (nil)           (nil)           5.000000
-48    0x503000000b50  FUNCTION        (nil)           0x503000000b20  VIS_START
-49    0x503000000b20  FUNCTION        (nil)           0x503000000af0  VIS_START
-50    0x503000000af0  FUNCTION        0x503000000a90  0x503000000ac0  ASSIGN
-51    0x503000000a90  VARIABLE        (nil)           (nil)           b
-52    0x503000000ac0  VARIABLE        (nil)           (nil)           x
+0     0x503000000d00  FUNCTION        (nil)           0x503000000cd0  VIS_START
+1     0x503000000cd0  FUNCTION        0x503000000940  0x503000000ca0  LCAT
+2     0x503000000940  FUNCTION        0x503000000430  0x503000000910  LCAT
+3     0x503000000430  FUNCTION        0x5030000002b0  0x503000000400  FUNC_DECL
+4     0x5030000002b0  FUNCTION        0x503000000250  0x503000000280  FUNC_INFO
+5     0x503000000250  FUNCTION        0x5030000001f0  0x503000000220  ENUM_SEP
+6     0x5030000001f0  VARIABLE        (nil)           (nil)           a
+7     0x503000000220  VARIABLE        (nil)           (nil)           b
+8     0x503000000280  VARIABLE        (nil)           (nil)           test
+9     0x503000000400  FUNCTION        (nil)           0x5030000003d0  VIS_START
+10    0x5030000003d0  FUNCTION        0x503000000340  0x5030000003a0  LCAT
+11    0x503000000340  FUNCTION        0x5030000002e0  0x503000000310  ASSIGN
+12    0x5030000002e0  VARIABLE        (nil)           (nil)           x
+13    0x503000000310  CONSTANT        (nil)           (nil)           5.000000
+14    0x5030000003a0  FUNCTION        (nil)           0x503000000370  RETURN
+15    0x503000000370  VARIABLE        (nil)           (nil)           x
+16    0x503000000910  FUNCTION        0x503000000520  0x5030000008e0  FUNC_DECL
+17    0x503000000520  FUNCTION        0x5030000004c0  0x5030000004f0  FUNC_INFO
+18    0x5030000004c0  FUNCTION        0x503000000460  0x503000000490  ENUM_SEP
+19    0x503000000460  VARIABLE        (nil)           (nil)           a
+20    0x503000000490  VARIABLE        (nil)           (nil)           b
+21    0x5030000004f0  VARIABLE        (nil)           (nil)           test2
+22    0x5030000008e0  FUNCTION        (nil)           0x5030000008b0  VIS_START
+23    0x5030000008b0  FUNCTION        0x503000000820  0x503000000880  LCAT
+24    0x503000000820  FUNCTION        0x503000000790  0x5030000007f0  LCAT
+25    0x503000000790  FUNCTION        0x5030000005b0  0x503000000760  LCAT
+26    0x5030000005b0  FUNCTION        0x503000000550  0x503000000580  ASSIGN
+27    0x503000000550  VARIABLE        (nil)           (nil)           x
+28    0x503000000580  VARIABLE        (nil)           (nil)           a
+29    0x503000000760  FUNCTION        0x5030000006a0  0x503000000730  IF
+30    0x5030000006a0  FUNCTION        0x503000000640  0x503000000670  EQ
+31    0x503000000640  FUNCTION        0x5030000005e0  0x503000000610  ASSIGN
+32    0x5030000005e0  VARIABLE        (nil)           (nil)           a
+33    0x503000000610  VARIABLE        (nil)           (nil)           b
+34    0x503000000670  CONSTANT        (nil)           (nil)           1.000000
+35    0x503000000730  FUNCTION        (nil)           0x503000000700  VIS_START
+36    0x503000000700  FUNCTION        (nil)           0x5030000006d0  RETURN
+37    0x5030000006d0  VARIABLE        (nil)           (nil)           x
+38    0x5030000007f0  FUNCTION        (nil)           0x5030000007c0  PRINT
+39    0x5030000007c0  VARIABLE        (nil)           (nil)           x
+40    0x503000000880  FUNCTION        (nil)           0x503000000850  RETURN
+41    0x503000000850  VARIABLE        (nil)           (nil)           x
+42    0x503000000ca0  FUNCTION        0x5030000009d0  0x503000000c70  FUNC_DECL
+43    0x5030000009d0  FUNCTION        0x503000000970  0x5030000009a0  FUNC_INFO
+44    0x503000000970  VARIABLE        (nil)           (nil)           n
+45    0x5030000009a0  VARIABLE        (nil)           (nil)           penis
+46    0x503000000c70  FUNCTION        (nil)           0x503000000c40  VIS_START
+47    0x503000000c40  FUNCTION        0x503000000b80  0x503000000c10  LCAT
+48    0x503000000b80  FUNCTION        0x503000000ac0  0x503000000b50  IF
+49    0x503000000ac0  FUNCTION        0x503000000a60  0x503000000a90  EQ
+50    0x503000000a60  FUNCTION        0x503000000a00  0x503000000a30  ASSIGN
+51    0x503000000a00  VARIABLE        (nil)           (nil)           n
+52    0x503000000a30  CONSTANT        (nil)           (nil)           1.000000
+53    0x503000000a90  CONSTANT        (nil)           (nil)           1.000000
+54    0x503000000b50  FUNCTION        (nil)           0x503000000b20  VIS_START
+55    0x503000000b20  FUNCTION        (nil)           0x503000000af0  RETURN
+56    0x503000000af0  CONSTANT        (nil)           (nil)           0.000000
+57    0x503000000c10  FUNCTION        0x503000000bb0  0x503000000be0  ASSIGN
+58    0x503000000bb0  VARIABLE        (nil)           (nil)           x
+59    0x503000000be0  CONSTANT        (nil)           (nil)           5.000000
 
 SVG: dumps/tree_dump_000.svg
 </pre>

@@ -336,8 +336,7 @@ static size_t pass1_count_params(parser_state_t* parser) {
     return argc;
 }
 
-static void pass1_collect_one(parser_state_t* parser,
-                              op_code_t decl_opcode) {
+static void pass1_collect_one(parser_state_t* parser, op_code_t decl_opcode) {
     parser_advance(parser); // func/proc
 
     if (!parser_check_kind(parser, LEX_TK_IDENT)) {
@@ -1189,8 +1188,10 @@ static tree_node_t* parse_keyword_func_call(parser_state_t* parser, bool value_c
 
     return ast_func(op_code, args_node, nullptr);
 }
+
+
 //================================================================================
-//                               Публичный API
+//                               Основные функции
 //================================================================================
 
 void frontend_parse_ast(tree_t* tree, const vector_t* tokens,
