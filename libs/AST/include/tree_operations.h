@@ -32,7 +32,7 @@ error_code tree_replace_root(tree_t* tree, tree_node_t* source_node);
 error_code destroy_node_recursive(tree_node_t* node, size_t* removed_out);
 
 value_t make_union_const(const_val_type constant);
-value_t make_union_var(size_t var_idx);
+value_t make_union_var(size_t ident_idx);
 value_t make_union_func(op_code_t func);
 value_t make_union_universal(node_type_t type, ...);
 

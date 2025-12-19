@@ -33,16 +33,16 @@ size_t vector_required_bytes(size_t capacity, size_t elem_size) {
 static vector_error_t vector_realloc(vector_t* vector, size_t new_capacity) {
     HARD_ASSERT(vector != nullptr, "vector is nullptr");
 
-    if (vector->is_static) return vector_ERR_FULL;
+    if (vector->is_static) return VEC_ERR_FULL;
 
     if (new_capacity < INITIAL_CAPACITY) new_capacity = INITIAL_CAPACITY;
-    if (new_capacity == vector->capacity)   return vector_ERR_OK;
+    if (new_capacity == vector->capacity)   return VEC_ERR_OK;
 
     const size_t old_bytes = vector->capacity * vector->elem_size;
     const size_t new_bytes = new_capacity  * vector->elem_size;
 
     void* new_data = realloc(vector->data, new_bytes);
-    if (new_data == nullptr) return vector_ERR_MEM_ALLOC;
+    if (new_data == nullptr) return VEC_ERR_MEM_ALLOC;
 
     if (new_bytes > old_bytes) {
         memset((unsigned char*)new_data + old_bytes, 0, new_bytes - old_bytes);
@@ -53,21 +53,21 @@ static vector_error_t vector_realloc(vector_t* vector, size_t new_capacity) {
 
     if (vector->size > vector->capacity) vector->size = vector->capacity;
 
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 static vector_error_t normalize_for_grow(vector_t* vector, size_t need_elems) {
     HARD_ASSERT(vector != nullptr, "vector is nullptr");
 
-    if (need_elems <= vector->capacity) return vector_ERR_OK;
-    if (vector->is_static)              return vector_ERR_FULL;
+    if (need_elems <= vector->capacity) return VEC_ERR_OK;
+    if (vector->is_static)              return VEC_ERR_FULL;
 
     size_t new_capacity = vector->capacity;
     if (new_capacity < INITIAL_CAPACITY) new_capacity = INITIAL_CAPACITY;
 
     while (new_capacity < need_elems) {
         size_t next = (size_t)((double)new_capacity * (double)GROWTH_FACTOR);
-        if (next <= new_capacity) return vector_ERR_BAD_ARG; 
+        if (next <= new_capacity) return VEC_ERR_BAD_ARG; 
         new_capacity = next;
     }
 
@@ -78,8 +78,8 @@ static vector_error_t normalize_for_grow(vector_t* vector, size_t need_elems) {
 static vector_error_t normalize_for_shrink(vector_t* vector) {
     HARD_ASSERT(vector != nullptr, "vector is nullptr");
 
-    if (vector->is_static)                    return vector_ERR_OK;
-    if (vector->capacity <= INITIAL_CAPACITY) return vector_ERR_OK;
+    if (vector->is_static)                    return VEC_ERR_OK;
+    if (vector->capacity <= INITIAL_CAPACITY) return VEC_ERR_OK;
 
     size_t new_capacity = vector->capacity;
 
@@ -94,7 +94,7 @@ static vector_error_t normalize_for_shrink(vector_t* vector) {
         new_capacity = candidate;
     }
 
-    if (new_capacity == vector->capacity) return vector_ERR_OK;
+    if (new_capacity == vector->capacity) return VEC_ERR_OK;
     return vector_realloc(vector, new_capacity);
 }
 
@@ -112,7 +112,7 @@ vector_error_t vector_init(vector_t* vector, size_t capacity, size_t elem_size) 
     if (capacity < INITIAL_CAPACITY) capacity = INITIAL_CAPACITY;
 
     void* data = calloc(capacity, elem_size);
-    if (data == nullptr) return vector_ERR_MEM_ALLOC;
+    if (data == nullptr) return VEC_ERR_MEM_ALLOC;
 
     vector->data      = data;
     vector->size      = 0;
@@ -121,7 +121,7 @@ vector_error_t vector_init(vector_t* vector, size_t capacity, size_t elem_size) 
     vector->is_static = false;
 
     LOGGER_DEBUG("vector_init finished");
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 vector_error_t vector_static_init(vector_t* vector, void* data, size_t capacity, size_t elem_size) {
@@ -131,7 +131,7 @@ vector_error_t vector_static_init(vector_t* vector, void* data, size_t capacity,
 
     LOGGER_DEBUG("vector_static_init started");
 
-    if (capacity == 0) return vector_ERR_BAD_ARG;
+    if (capacity == 0) return VEC_ERR_BAD_ARG;
 
     memset(data, 0, capacity * elem_size);
 
@@ -142,7 +142,7 @@ vector_error_t vector_static_init(vector_t* vector, void* data, size_t capacity,
     vector->is_static = true;
 
     LOGGER_DEBUG("vector_static_init finished");
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 vector_error_t vector_destroy(vector_t* vector) {
@@ -154,7 +154,7 @@ vector_error_t vector_destroy(vector_t* vector) {
     memset(vector, 0, sizeof(*vector));
 
     LOGGER_DEBUG("vector_destroy finished");
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 //================================================================================
@@ -203,13 +203,13 @@ vector_error_t vector_push_back(vector_t* vector, const void* elem) {
 
     memcpy(vector_ptr(vector, vector->size), elem, vector->elem_size);
     vector->size++;
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 vector_error_t vector_pop_back(vector_t* vector, void* elem_out) {
     HARD_ASSERT(vector != nullptr, "vector is nullptr");
 
-    if (vector->size == 0) return vector_ERR_NOT_FOUND;
+    if (vector->size == 0) return VEC_ERR_NOT_FOUND;
     const size_t last = vector->size - 1;
     if (elem_out != nullptr) 
         memcpy(elem_out, vector_ptr(vector, last), vector->elem_size);
@@ -218,14 +218,14 @@ vector_error_t vector_pop_back(vector_t* vector, void* elem_out) {
     vector_error_t err = normalize_for_shrink(vector);
     vector_RETURN_IF_ERROR(err);
 
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 vector_error_t vector_insert(vector_t* vector, size_t index, const void* elem) {
     HARD_ASSERT(vector  != nullptr, "vector is nullptr");
     HARD_ASSERT(elem != nullptr, "elem is nullptr");
 
-    if (index > vector->size) return vector_ERR_BAD_ARG;
+    if (index > vector->size) return VEC_ERR_BAD_ARG;
 
     vector_error_t err = normalize_for_grow(vector, vector->size + 1);
     vector_RETURN_IF_ERROR(err);
@@ -239,13 +239,13 @@ vector_error_t vector_insert(vector_t* vector, size_t index, const void* elem) {
     memcpy(vector_ptr(vector, index), elem, vector->elem_size);
     vector->size++;
 
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }
 
 vector_error_t vector_erase(vector_t* vector, size_t index, void* elem_out) {
     HARD_ASSERT(vector != nullptr, "vector is nullptr");
 
-    if (index >= vector->size) return vector_ERR_NOT_FOUND;
+    if (index >= vector->size) return VEC_ERR_NOT_FOUND;
 
     if (elem_out != nullptr) 
         memcpy(elem_out, vector_ptr(vector, index), vector->elem_size);
@@ -262,5 +262,5 @@ vector_error_t vector_erase(vector_t* vector, size_t index, void* elem_out) {
     vector_error_t err = normalize_for_shrink(vector);
     vector_RETURN_IF_ERROR(err);
 
-    return vector_ERR_OK;
+    return VEC_ERR_OK;
 }

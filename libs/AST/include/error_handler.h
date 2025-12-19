@@ -24,5 +24,15 @@ enum error_type {
 
 typedef long error_code;
 
+#define TREE_RETURN_IF_ERROR(error_, ...) 						\
+	do {														\
+		error_code err_ = (error_);									 	\
+		if((err_) != 0) { 							\
+			LOGGER_ERROR("Error code: %lu", (error_));  \
+			 __VA_ARGS__\
+			return (error_); 							\
+		}												\
+	} while(0)
+
 
 #endif /* LIBS_AST_INCLUDE_ERROR_HANDLER_H_NCLUDED */

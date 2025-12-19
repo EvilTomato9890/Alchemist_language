@@ -1,0 +1,21 @@
+/*
+HANDLE_FUNC(op_code, func in code,       args_cnt)
+*/                                                                                                                         
+HANDLE_FUNC(OP_PLUS,      a + b,            2)                                                                                                                                                                                                                                                                           
+HANDLE_FUNC(OP_MINUS,     a - b,            2)                                                                                                                                                                                                                                                                           
+HANDLE_FUNC(OP_MUL,       a * b,            2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+HANDLE_FUNC(OP_DIV,       a / b,            2)                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                     
+HANDLE_FUNC(OP_POW,       pow(a, b),        2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+HANDLE_FUNC(OP_LOG,       log(b) / log(a),  2)                                                                                                                                                                                                                                                                           
+
+/*
+HANDLE_FUNC(OP_EQ,     a == b,               2) //TODO: ДОБАВТЬБ
+HANDLE_FUNC(OP_NEQ,    a != b,               2)
+HANDLE_FUNC(OP_LE,     a <= b,               2)
+HANDLE_FUNC(OP_GE,     a >= b,               2)
+HANDLE_FUNC(OP_LT,     a < b,                 2)
+HANDLE_FUNC(OP_GT,     a > b,                 2)
+HANDLE_FUNC(OP_AND,    a && b,               2)
+HANDLE_FUNC(OP_OR,     a || b,               2)
+*/

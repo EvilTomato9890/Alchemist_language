@@ -93,7 +93,7 @@ static tree_node_t* mk_func(op_code_t f, tree_node_t* l, tree_node_t* r) {
     return init_node(FUNCTION, make_union_func(f), l, r);
 }
 
-// Структурное сравнение (для VARIABLE сравниваем индекс; если хочешь — поменяй на имя)
+// Структурное сравнение (для IDENT сравниваем индекс; если хочешь — поменяй на имя)
 static bool nodes_equal(const tree_node_t* a, const tree_node_t* b) {
     if (a == nullptr || b == nullptr) return a == b;
     if (a->type != b->type) return false;
@@ -105,8 +105,8 @@ static bool nodes_equal(const tree_node_t* a, const tree_node_t* b) {
         case FUNCTION:
             if (a->value.func != b->value.func) return false;
             break;
-        case VARIABLE:
-            if (a->value.var_idx != b->value.var_idx) return false;
+        case IDENT:
+            if (a->value.ident_idx != b->value.ident_idx) return false;
             break;
         default:
             return false;
@@ -127,7 +127,7 @@ static bool nodes_equal_by_var_name(const tree_t* ta, const tree_node_t* a,
         case FUNCTION:
             if (a->value.func != b->value.func) return false;
             break;
-        case VARIABLE: {
+        case IDENT: {
             c_string_t na = get_var_name(ta, a);
             c_string_t nb = get_var_name(tb, b);
             if (na.len != nb.len) return false;
@@ -308,10 +308,10 @@ TEST_CASE(test_write_read_roundtrip_function) {
     remove(fname);
 }
 
-TEST_CASE(test_read_write_with_variable) {
+TEST_CASE(test_read_write_with_IDENT) {
     const char* fname = "tree_test_tmp_var.ast";
 
-    // Пытаемся прогнать VARIABLE-ветку (если ident_stack_push работает без явного init — ок).
+    // Пытаемся прогнать IDENT-ветку (если ident_stack_push работает без явного init — ок).
     {
         tree_t t = make_empty_tree();
 
@@ -320,7 +320,7 @@ TEST_CASE(test_read_write_with_variable) {
         size_t idx = get_or_add_ident_idx(x, t.ident_stack, &err);
         CHECK_EQ_INT(err, ERROR_NO);
 
-        tree_node_t* xnode = init_node(VARIABLE, make_union_var(idx), nullptr, nullptr);
+        tree_node_t* xnode = init_node(IDENT, make_union_var(idx), nullptr, nullptr);
         tree_node_t* cnode = mk_const(5.0);
         tree_node_t* root  = mk_func(OP_PLUS, xnode, cnode);
 
@@ -342,7 +342,7 @@ TEST_CASE(test_read_write_with_variable) {
         CHECK_EQ_INT(t.root->type, FUNCTION);
 
         CHECK_TRUE(t.root->left != nullptr);
-        CHECK_EQ_INT(t.root->left->type, VARIABLE);
+        CHECK_EQ_INT(t.root->left->type, IDENT);
 
         c_string_t name = get_var_name(&t, t.root->left);
         CHECK_EQ_U64(name.len, 1);
@@ -369,7 +369,7 @@ int main() {
     test_parse_empty_and_nil();
     test_parse_invalid();
     test_write_read_roundtrip_function();
-    test_read_write_with_variable();
+    test_read_write_with_IDENT();
 
     if (g_failed == 0) {
         printf("OK\n");

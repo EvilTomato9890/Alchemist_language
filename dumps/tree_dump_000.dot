@@ -1,0 +1,11 @@
+digraph T{
+  node [fontname="Fira Mono",shape=record,style="filled,rounded",fontsize=12];
+  graph [splines=true, nodesep=0.6, ranksep=0.6];
+  node_0x503000000280[shape=record,label="{ {ptr: 0x503000000280} | {val: VIS_START} | { prev: (nil) | next: 0x503000000250 } }",color="#5aa99b",fillcolor="#e9fbf5"];
+  node_0x503000000250[shape=record,label="{ {ptr: 0x503000000250} | {val: ASSIGN} | { prev: 0x5030000001f0 | next: 0x503000000220 } }",color="#8e6bd6",fillcolor="#f1eafd"];
+  node_0x5030000001f0[shape=record,label="{ {ptr: 0x5030000001f0} | {val: x} | { prev: (nil) | next: (nil) } }",color="#c9fbdbff",fillcolor="#e8f9e5ff"];
+  node_0x503000000220[shape=record,label="{ {ptr: 0x503000000220} | {val: 5.000000} | { prev: (nil) | next: (nil) } }",color="#c9fbdbff",fillcolor="#e8f9e5ff"];
+  node_0x503000000280 -> node_0x503000000250 [color="#999999"];
+  node_0x503000000250 -> node_0x5030000001f0 [color="#999999"];
+  node_0x503000000250 -> node_0x503000000220 [color="#999999"];
+}

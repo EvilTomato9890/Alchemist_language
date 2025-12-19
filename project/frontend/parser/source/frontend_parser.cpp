@@ -122,7 +122,7 @@ static void parser_push_diag(parser_state_t* parser, diag_code_t diag_code,
 
     va_list args;
     va_start(args, format);
-    (void)vsnprintf(message_buf, sizeof(message_buf), format, args);
+    vsnprintf(message_buf, sizeof(message_buf), format, args);
     va_end(args);
 
     diag_log_t diag = diag_log_init(PARSER_ERROR, diag_code,
@@ -130,7 +130,7 @@ static void parser_push_diag(parser_state_t* parser, diag_code_t diag_code,
                                    token->line, token->column,
                                    "%s", message_buf);
 
-    (void)vector_push_back(parser->diags, &diag);
+    vector_push_back(parser->diags, &diag);
 }
 
 static void parser_expected(parser_state_t* parser, const char* what) {
@@ -157,18 +157,9 @@ static void parser_sync_to_lcat(parser_state_t* parser) {
 //                      Функции для u_map
 //================================================================================
 
-static uint64_t splitmix64(uint64_t value) {
-    value += 0x9e3779b97f4a7c15ULL;
-    value = (value ^ (value >> 30)) * 0xbf58476d1ce4e5b9ULL;
-    value = (value ^ (value >> 27)) * 0x94d049bb133111ebULL;
-    value = value ^ (value >> 31);
-    return value;
-}
-
 size_t parser_hash_size_t(const void* key_ptr) {
     HARD_ASSERT(key_ptr != nullptr, "key_ptr is nullptr");
-    uint64_t value = (uint64_t)(*(const size_t*)key_ptr);
-    return (size_t)splitmix64(value);
+    return (uint64_t)*(const size_t*)key_ptr;
 }
 
 bool parser_key_cmp_size_t(const void* left_ptr, const void* right_ptr) {
@@ -186,7 +177,7 @@ static bool func_table_get(const u_map_t* func_table,
 static void func_table_put(u_map_t* func_table,
                            size_t name_idx,
                            const func_decl_info_t* info_ptr) {
-    (void)u_map_insert_elem(func_table, &name_idx, info_ptr);
+    u_map_insert_elem(func_table, &name_idx, info_ptr);
 }
 
 //================================================================================
@@ -205,14 +196,13 @@ static tree_node_t* ast_const(double value) {
     return init_node(CONSTANT, node_val, nullptr, nullptr);
 }
 
-static tree_node_t* ast_var(size_t var_idx) {
-    value_t node_val = make_union_var(var_idx);
-    return init_node(VARIABLE, node_val, nullptr, nullptr);
+static tree_node_t* ast_var(size_t ident_idx) {
+    value_t node_val = make_union_var(ident_idx);
+    return init_node(IDENT, node_val, nullptr, nullptr);
 }
 
 static tree_node_t* ast_unary(op_code_t op_code,
                               tree_node_t* child_node) {
-    // Унарные: ребенок справа.
     return ast_func(op_code, nullptr, child_node);
 }
 
@@ -251,6 +241,8 @@ static bool stmt_is_block_like(const tree_node_t* node);
 static bool parser_is_direct_call(const parser_state_t* parser);
 static tree_node_t* parse_direct_call(parser_state_t* parser, bool value_context);
 static tree_node_t* parse_keyword_func_call(parser_state_t* parser, bool value_ctx);
+static void parser_skip_failed_decl(parser_state_t* parser);
+static void parser_skip_block(parser_state_t* parser);
 
 static size_t parse_ident_idx(parser_state_t* parser,
                               const lexer_token_t* token) {
@@ -322,7 +314,7 @@ static size_t pass1_count_params(parser_state_t* parser) {
         }
 
         const lexer_token_t* token = parser_advance(parser);
-        (void)parse_ident_idx(parser, token);
+        parse_ident_idx(parser, token);
         argc++;
 
         if (parser_match_keyword(parser, OP_ENUM_SEP)) continue;
@@ -441,7 +433,8 @@ static tree_node_t* parse_toplevel(parser_state_t* parser) {
                                          : parse_stmt(parser);
 
         if (item_node == nullptr) {
-            parser_sync_to_lcat(parser);
+            if (is_decl) parser_skip_failed_decl(parser);
+            else         parser_sync_to_lcat(parser);
             continue;
         }
 
@@ -449,7 +442,7 @@ static tree_node_t* parse_toplevel(parser_state_t* parser) {
             parser_consume_optional_lcat(parser);
         } else {
             bool trailing = false;
-            (void)parser_consume_stmt_end(parser, true, &trailing);
+            parser_consume_stmt_end(parser, true, &trailing);
         }
 
         list_root = ast_make_list(OP_LCAT, list_root, item_node);
@@ -489,7 +482,7 @@ static tree_node_t* parse_param_list(parser_state_t* parser,
         size_t param_idx = parse_ident_idx(parser, param_tok);
         tree_node_t* param_node = ast_var(param_idx);
 
-        (void)vector_push_back(&parser->pending_params, &param_idx);
+        vector_push_back(&parser->pending_params, &param_idx);
 
         list_root = ast_make_list(OP_ENUM_SEP, list_root, param_node);
         (*argc_out)++;
@@ -565,6 +558,34 @@ static tree_node_t* parse_decl(parser_state_t* parser) {
     return ast_func(decl_opcode, info_node, body_node);
 }
 
+static void parser_skip_failed_decl(parser_state_t* parser) {
+    parser_advance(parser);
+
+    while (!parser_is_eof(parser)) {
+        if (parser_check_keyword(parser, OP_VIS_START)) {
+            parser_skip_block(parser);
+            break;
+        }
+
+        if (parser_check_keyword(parser, OP_LCAT)) {
+            parser_advance(parser);
+            return;
+        }
+
+        if (parser_check_keyword(parser, OP_FUNC_DECL) ||
+            parser_check_keyword(parser, OP_PROC_DECL)) {
+            return;
+        }
+
+        parser_advance(parser);
+    }
+
+    if (parser_check_keyword(parser, OP_LCAT)) {
+        parser_advance(parser);
+    }
+}
+
+
 
 //================================================================================
 //                              Разбор блока 
@@ -599,7 +620,6 @@ static tree_node_t* parse_block(parser_state_t* parser) {
     return ast_unary(OP_VIS_START, list_node);
 }
 
-
 static tree_node_t* parse_stmt_list(parser_state_t* parser) {
     tree_node_t* list_root = nullptr;
 
@@ -610,8 +630,11 @@ static tree_node_t* parse_stmt_list(parser_state_t* parser) {
             continue; // пустой оператор
         }
 
+        size_t old_pos = parser->position;
         tree_node_t* stmt_node = parse_stmt(parser);
+
         if (stmt_node == nullptr) {
+            if (parser->position != old_pos) continue;
             parser_sync_to_lcat(parser);
             continue;
         }
@@ -620,7 +643,7 @@ static tree_node_t* parse_stmt_list(parser_state_t* parser) {
             parser_consume_optional_lcat(parser);
         } else {
             bool trailing = false;
-            (void)parser_consume_stmt_end(parser, true, &trailing);
+            parser_consume_stmt_end(parser, true, &trailing);
             if (trailing) {
                 list_root = ast_make_list(OP_LCAT, list_root, stmt_node);
                 break;
@@ -633,8 +656,30 @@ static tree_node_t* parse_stmt_list(parser_state_t* parser) {
     return list_root;
 }
 
+static void parser_skip_block(parser_state_t* parser) {
+    if (!parser_match_keyword(parser, OP_VIS_START)) return;
+
+    size_t depth = 1;
+    while (!parser_is_eof(parser) && depth > 0) {
+        if (parser_check_keyword(parser, OP_VIS_START)) {
+            parser_advance(parser);
+            depth++;
+            continue;
+        }
+
+        if (parser_check_kind(parser, LEX_TK_RBRACE)) {
+            parser_advance(parser);
+            depth--;
+            continue;
+        }
+
+        parser_advance(parser);
+    }
+}
+
+
 //================================================================================
-//                              Разбор операторов
+//                       Разбор операторов
 //================================================================================
 
 static tree_node_t* parse_if(parser_state_t* parser) {
@@ -692,16 +737,16 @@ static tree_node_t* parse_stmt_expr(parser_state_t* parser) {
     return parse_assign(parser);
 }
 
-
 static tree_node_t* parse_stmt(parser_state_t* parser) {
     if (parser_check_keyword(parser, OP_FUNC_DECL) ||
         parser_check_keyword(parser, OP_PROC_DECL)) {
-        parser_push_diag(parser, DIAG_PARSE_NESTED_DECL, nullptr,
-                         "объявления func/proc запрещены внутри тела");
+
+        parser_push_diag(parser, DIAG_PARSE_NESTED_DECL, parser_peek(parser),
+                        "объявления func/proc запрещены внутри тела");
+        parser_skip_failed_decl(parser);
         return nullptr;
     }
-
-    if (parser_check_keyword(parser, OP_IF)) return parse_if(parser);
+    if (parser_check_keyword(parser, OP_IF))    return parse_if(parser);
     if (parser_check_keyword(parser, OP_WHILE)) return parse_while(parser);
 
     if (parser_match_keyword(parser, OP_BREAK)) {
@@ -754,17 +799,6 @@ static tree_node_t* parse_stmt(parser_state_t* parser) {
         return ast_unary(OP_RETURN, expr_node);
     }
 
-    if (parser_match_keyword(parser, OP_PRINT)) {
-        bool has_paren = parser_match_kind(parser, LEX_TK_LPAREN);
-        tree_node_t* expr_node = parse_assign(parser);
-
-        if (has_paren && !parser_match_kind(parser, LEX_TK_RPAREN)) {
-            parser_expected(parser, "')'");
-            parser_sync_to_lcat(parser);
-        }
-        return ast_unary(OP_PRINT, expr_node);
-    }
-
     if (parser_check_keyword(parser, OP_VIS_START)) return parse_block(parser);
     return parse_stmt_expr(parser);
 }
@@ -794,16 +828,16 @@ static void parser_var_define(parser_state_t* parser,
     record.had_prev = found;
     if (found) record.prev_info = existing;
 
-    (void)vector_push_back(&parser->var_records, &record);
+    vector_push_back(&parser->var_records, &record);
 
     var_info_t new_info = {};
     new_info.scope_depth = parser->scope_depth;
-    (void)u_map_insert_elem(parser->var_table, &name_idx, &new_info);
+    u_map_insert_elem(parser->var_table, &name_idx, &new_info);
 }
 
 static void parser_scope_enter(parser_state_t* parser) {
     size_t marker = vector_size(&parser->var_records);
-    (void)vector_push_back(&parser->scope_markers, &marker);
+    vector_push_back(&parser->scope_markers, &marker);
 
     parser->scope_depth++;
 
@@ -821,18 +855,18 @@ static void parser_scope_enter(parser_state_t* parser) {
 
 static void parser_scope_leave(parser_state_t* parser) {
     size_t marker = 0;
-    (void)vector_pop_back(&parser->scope_markers, &marker);
+    vector_pop_back(&parser->scope_markers, &marker);
 
     while (vector_size(&parser->var_records) > marker) {
         var_record_t record = {};
-        (void)vector_pop_back(&parser->var_records, &record);
+        vector_pop_back(&parser->var_records, &record);
 
         if (record.had_prev) {
-            (void)u_map_insert_elem(parser->var_table,
+            u_map_insert_elem(parser->var_table,
                                     &record.name_idx, &record.prev_info);
         } else {
             var_info_t dummy = {};
-            (void)u_map_remove_elem(parser->var_table,
+            u_map_remove_elem(parser->var_table,
                                     &record.name_idx, &dummy);
         }
     }
@@ -860,7 +894,7 @@ static tree_node_t* parse_assign(parser_state_t* parser) {
         const lexer_token_t* name_tok = parser_advance(parser);
         size_t name_idx = parse_ident_idx(parser, name_tok);
 
-        (void)parser_match_keyword(parser, OP_ASSIGN);
+        parser_match_keyword(parser, OP_ASSIGN);
 
         parser_var_define(parser, name_idx);
 
@@ -1037,7 +1071,7 @@ static tree_node_t* parse_primary(parser_state_t* parser) {
 
         var_info_t info = {};
         if (!parser_var_lookup(parser, name_idx, &info)) {
-            parser_push_diag(parser, DIAG_PARSE_UNDEF_VARIABLE, token,
+            parser_push_diag(parser, DIAG_PARSE_UNDEF_IDENT, token,
                             "неизвестная переменная");
         }
 

@@ -64,6 +64,7 @@ TST_SRC  := $(wildcard $(TST_DIR)/*.cpp) $(wildcard $(TST_DIR)/*.c)
 
 LIB_OBJS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(patsubst %.c,$(OBJ_DIR)/%.o,$(LIB_SRC)))
 TST_OBJS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(patsubst %.c,$(OBJ_DIR)/%.o,$(TST_SRC)))
+LIB_PATH := $(LIB_DIR)/lib$(PROJECT).a
 
 TST_EXE  := $(BIN_DIR)/$(PROJECT)_tests
 
@@ -111,9 +112,11 @@ EXT_LIBS := $(EXT_LIB_A_1) $(EXT_LIB_A_2) $(EXT_LIB_A_3) $(EXT_LIB_A_4) $(EXT_LI
 
 all: test
 
+lib: $(LIB_PATH)
 
 help:
 	@echo "Targets:"
+	@echo "  make lib         - build static library   ($(LIB_PATH))"
 	@echo "  make test        - build tests executable ($(TST_EXE))"
 	@echo "  make clean"
 	@echo "  make test_clean  - clear after test"
@@ -166,6 +169,9 @@ $(EXT_LIB_A_8):
 		CFG="$(CFG)" CXX="$(CXX)" DEFS="$(DEFS)" STD="$(STD)" SAN_FLAGS="$(SAN_FLAGS)" \
 		WARN_FLAGS="$(WARN_FLAGS)" LDFLAGS="$(LDFLAGS)" LDLIBS="$(LDLIBS)"
 
+$(LIB_PATH): $(LIB_OBJS)
+	@mkdir -p $(dir $@)
+	@$(AR) $(ARFLAGS) $@ $^
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)

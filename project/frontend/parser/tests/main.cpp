@@ -12,6 +12,7 @@
 
 #include "libs/AST/include/tree_operations.h"
 #include "libs/AST/include/tree_verification.h"
+#include "libs/AST/include/tree_file_io.h"
 #include "libs/Stack/include/ident_stack.h"
 
 static const char* token_kind_name(lexer_token_kind_t kind) {
@@ -175,6 +176,7 @@ int main(int argc, char** argv) {
         print_diags(stderr, buffer, filename, &diag_vec);
     }
     tree_dump(&tree, TREE_VER_INIT, true, "Final AST after parsing");
+    tree_write_to_file(&tree, "tree_write");
     ON_TREE_DEBUG(
         tree_close_dump_file(&tree);
     )

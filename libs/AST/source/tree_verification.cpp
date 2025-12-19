@@ -143,8 +143,8 @@ static const char* node_val_to_str(const tree_t* tree, const tree_node_t* node,
         case CONSTANT:
             snprintf(buf, buf_size, "%lf", node->value.constant);
             return buf;
-        case VARIABLE: {
-            c_string_t curr_string = tree->ident_stack->data[node->value.var_idx];
+        case IDENT: {
+            c_string_t curr_string = tree->ident_stack->data[node->value.ident_idx];
             if(buf_size < curr_string.len) LOGGER_WARNING("string len is bigger than buf_size. Printed %ld symbols, srt_len: %ld", buf_size, curr_string.len);
             
             
@@ -263,7 +263,7 @@ static const char* node_type_to_string(node_type_t type) {
     switch (type) {
         case FUNCTION: return "FUNCTION";
         case CONSTANT: return "CONSTANT";
-        case VARIABLE: return "VARIABLE";
+        case IDENT: return "IDENT";
         default: return "UNKNOWN";
     }
 }

@@ -1,25 +1,6 @@
-func test(a, b) { 
-	x = 5; 
-	return x; 
-} 
-
-func test2(a, b) { 
-	x = a; 
-	if a = b {
-		return x;
-	} 
-
-	
-	print(x);
-	return x;
-} 
-
-func penis(n) {
-	if n = 1 {
-		return 0;
-	}
-
-	func foo(a) {return a;
-	x = 5;}
-	return n * penis(n - 1);
+proc fff() {
+	finish;
 }
+x = log(1, 2);
+fff();
+b = 5;

@@ -1,0 +1,1 @@
+(VIS_START () (LCAT (LCAT (LCAT (PROC_DECL (FUNC_INFO () ("ffftr" () ())), (VIS_START () (FINISH () ()))), (ASSIGN ("xtr" () ()), (LOG (ENUM_SEP (1 () ()), (2 () ())) ()))), (CALL (FUNC_INFO () ("ffftr" () ())) ())), (ASSIGN ("btr" () ()), (5 () ()))))

@@ -9,12 +9,12 @@ typedef double const_val_type;
 enum node_type_t {
     FUNCTION,
     CONSTANT,
-    VARIABLE
+    IDENT
 };
 
 union value_t {
     const_val_type constant;
-    size_t         var_idx;
+    size_t         ident_idx;
     op_code_t      func;
 };
 

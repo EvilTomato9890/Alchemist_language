@@ -4,12 +4,12 @@
 #include "common/logger/include/logger.h"
 
 enum vector_error_t {
-    vector_ERR_OK,
-    vector_ERR_MEM_ALLOC,         
-    vector_ERR_FULL,        
-    vector_ERR_BAD_ARG,     
-    vector_ERR_NOT_FOUND,  
-    vector_ERR_INTERNAL 
+    VEC_ERR_OK,
+    VEC_ERR_MEM_ALLOC,         
+    VEC_ERR_FULL,        
+    VEC_ERR_BAD_ARG,     
+    VEC_ERR_NOT_FOUND,  
+    VEC_ERR_INTERNAL 
 };
  
 #define vector_RETURN_IF_ERROR(error_, ...)                       \

@@ -1,0 +1,34 @@
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #0 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">First</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f703001b0
+root ptr  : 0x503000000280
+size      : 4
+stack ptr : 0x506000000020
+buff.ptr  : (nil)
+buff.len  : 0
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 245
+
+-- Called at (passed ver_info) --
+file: main.cpp
+func: main
+line: 279
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000280  FUNCTION        (nil)           0x503000000250  VIS_START
+1     0x503000000250  FUNCTION        0x5030000001f0  0x503000000220  ASSIGN
+2     0x5030000001f0  IDENT           (nil)           (nil)           x
+3     0x503000000220  CONSTANT        (nil)           (nil)           5.000000
+
+SVG: dumps/tree_dump_000.svg
+</pre>
+<img src="dumps/tree_dump_000.svg" style="max-width:2250px;"/>
+
+<hr>

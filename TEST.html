@@ -1,0 +1,245 @@
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #1 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">After reading node: VIS_STARTtr 
+Buffer remainder:  () (ASSIGN ("xtr" () ()), (5 () ())))</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 0
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: source/tree_file_io.cpp
+func: debug_print_buffer_remainder
+line: 155
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        (nil)           (nil)           VIS_START
+
+SVG: dumps/tree_dump_001.svg
+</pre>
+<img src="dumps/tree_dump_001.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #2 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">After reading node: ASSIGNtr 
+Buffer remainder:  ("xtr" () ()), (5 () ())))</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 0
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: source/tree_file_io.cpp
+func: debug_print_buffer_remainder
+line: 155
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  (nil)           VIS_START
+1     0x503000000340  FUNCTION        (nil)           (nil)           ASSIGN
+
+SVG: dumps/tree_dump_002.svg
+</pre>
+<img src="dumps/tree_dump_002.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #3 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">After reading node: xtrtr 
+Buffer remainder: " () ()), (5 () ())))</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 0
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: source/tree_file_io.cpp
+func: debug_print_buffer_remainder
+line: 155
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  (nil)           VIS_START
+1     0x503000000340  FUNCTION        0x5030000003a0  (nil)           ASSIGN
+2     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+
+SVG: dumps/tree_dump_003.svg
+</pre>
+<img src="dumps/tree_dump_003.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #4 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">After reading node: 5tr 
+Buffer remainder:  () ())))</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 0
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: source/tree_file_io.cpp
+func: debug_print_buffer_remainder
+line: 155
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  (nil)           VIS_START
+1     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+2     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+3     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+
+SVG: dumps/tree_dump_004.svg
+</pre>
+<img src="dumps/tree_dump_004.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #5 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">aaaa</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 7
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: main.cpp
+func: main
+line: 313
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  0x503000000340  VIS_START
+1     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+2     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+3     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+4     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+5     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+6     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+
+SVG: dumps/tree_dump_005.svg
+</pre>
+<img src="dumps/tree_dump_005.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #6 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">aaaa</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 7
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: main.cpp
+func: main
+line: 322
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  0x503000000340  VIS_START
+1     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+2     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+3     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+4     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+5     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+6     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+
+SVG: dumps/tree_dump_006.svg
+</pre>
+<img src="dumps/tree_dump_006.svg" style="max-width:2250px;"/>
+
+<hr>
+<pre style="font-family:'Fira Mono', monospace;font-size:16px; line-height:1.28;background:#0b0e14; color:#e6e1cf;padding:12px; border-radius:10px;">
+<span style="color:#6b8fd6;font-weight:700;">====================[ TREE DUMP #7 ]====================</span>
+Timestamp: <span style="color:#8be9fd;">2025-12-18 13:50:34</span>
+<span style="color:#ff4d4f;font-weight:700;">aaaa</span>
+<span style="color:#6b8fd6;font-weight:700;">===================================================</span>
+tree ptr  : 0x783f70300220
+root ptr  : 0x503000000310
+size      : 7
+stack ptr : 0x506000000080
+buff.ptr  : 0x5060000000e0
+buff.len  : 48
+
+-- Created at (tree ver_info) --
+file: main.cpp
+func: main
+line: 305
+
+-- Called at (passed ver_info) --
+file: main.cpp
+func: main
+line: 332
+
+IDX   NODE PTR          TYPE          LEFT PTR        RIGHT PTR           VALUE
+----  --------------  --------------  --------------  --------------  --------------------
+0     0x503000000310  FUNCTION        0x503000000340  0x503000000340  VIS_START
+1     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+2     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+3     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+4     0x503000000340  FUNCTION        0x5030000003a0  0x503000000460  ASSIGN
+5     0x5030000003a0  IDENT           (nil)           (nil)           xtr
+6     0x503000000460  CONSTANT        (nil)           (nil)           5.000000
+
+SVG: dumps/tree_dump_007.svg
+</pre>
+<img src="dumps/tree_dump_007.svg" style="max-width:2250px;"/>
+
+<hr>

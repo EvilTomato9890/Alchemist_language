@@ -22,8 +22,8 @@ value_t make_union_const(const_val_type constant) {
     return val;
 }
 
-value_t make_union_var(size_t var_idx) {
-    value_t val = {.var_idx = var_idx};
+value_t make_union_var(size_t ident_idx) {
+    value_t val = {.ident_idx = ident_idx};
     return val;
 }
 
@@ -44,9 +44,9 @@ value_t make_union_universal(node_type_t type, ...) {
             val.constant = constant;
             break;
         }
-        case VARIABLE: {
+        case IDENT: {
             int var = va_arg(ap, int);
-            val.var_idx = var;
+            val.ident_idx = var;
             break;
         }
         case FUNCTION: {
@@ -185,7 +185,7 @@ bool tree_is_empty(const tree_t* tree) {
 bool is_subree_const(const tree_node_t* node) {
     if (!node) return false;
     if (node->type == CONSTANT) return true;
-    if (node->type == VARIABLE) return false;
+    if (node->type == IDENT) return false;
     return is_subree_const(node->left) && is_subree_const(node->right);
 }
 
@@ -320,12 +320,12 @@ size_t get_or_add_ident_idx(c_string_t ident, ident_stack_t* ident_stack, error_
     return (size_t)idx;
 }
 
-c_string_t get_var_name(const tree_t* tree, const tree_node_t* node) {  //REVIEW - Стоит ли node или var_idx
+c_string_t get_var_name(const tree_t* tree, const tree_node_t* node) {  //REVIEW - Стоит ли node или ident_idx
     HARD_ASSERT(tree != nullptr, "tree is nullptr");
     HARD_ASSERT(node != nullptr, "Node is nullptr");
-    if(node->type != VARIABLE) return {nullptr, 0};
+    if(node->type != IDENT) return {nullptr, 0};
 
-    return tree->ident_stack->data[node->value.var_idx];
+    return tree->ident_stack->data[node->value.ident_idx];
 }   
 
 //--------------------------------------------------------------------------------

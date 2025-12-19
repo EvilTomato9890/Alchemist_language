@@ -9,18 +9,21 @@ enum op_code_t {
     OP_NONE = 0,
 
     OP_EQ,                                      
-    OP_NEQ,                             
+    OP_NEQ,
     OP_LE,                             
     OP_GE,                             
     OP_LT,                             
     OP_GT,                              
     OP_AND, 
     OP_OR,
-
+    
     OP_PLUS,                                                        
     OP_MINUS,                           
     OP_MUL,                             
     OP_DIV,  
+
+    OP_POW,
+    OP_LOG,
 
     OP_ASSIGN,  
 
@@ -54,6 +57,7 @@ struct keyword_def_t {
     const char*    lang_name; 
     const char*    tree_name; 
     bool           is_func;
+    bool           is_calculatable;
 };
 
 //================================================================================
