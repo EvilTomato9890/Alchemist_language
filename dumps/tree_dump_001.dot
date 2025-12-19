@@ -1,5 +1,0 @@
-digraph T{
-  node [fontname="Fira Mono",shape=record,style="filled,rounded",fontsize=12];
-  graph [splines=true, nodesep=0.6, ranksep=0.6];
-  node_0x503000000310[shape=record,label="{ {ptr: 0x503000000310} | {val: VIS_START} | { prev: (nil) | next: (nil) } }",color="#5aa99b",fillcolor="#e9fbf5"];
-}

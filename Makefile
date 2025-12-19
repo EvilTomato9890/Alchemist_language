@@ -237,6 +237,7 @@ $(MAIN_OBJ): $(MAIN_SRC)
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf dumps
 	rm -f $(PROJECT_HEADERS_FILE)
 	@$(MAKE) -C "$(COMMON_LIB_DIR)" clean || true
 	@$(MAKE) -C "$(LIBS_LIB_DIR_1)" clean || true
